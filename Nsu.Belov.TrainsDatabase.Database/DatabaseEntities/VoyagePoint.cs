@@ -22,8 +22,7 @@ namespace Nsu.Belov.TrainsDatabase.Database
         public Voyage Voyage { get; set; }
 
         public DateTime DepartureTime { get; set; }
-        public int PassengersEntered{ get; set; }
-        public int PassengersLeft{ get; set; }
+
         public Delay Delay{ get; set; }
     }
 }
