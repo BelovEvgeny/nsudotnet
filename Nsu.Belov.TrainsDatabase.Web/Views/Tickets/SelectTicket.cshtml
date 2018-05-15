@@ -1,0 +1,13 @@
+﻿@model Nsu.Belov.TrainsDatabase.Web.Models.SelectTicketViewModel
+
+@{
+    ViewBag.Title = "SelectTicket";
+}
+
+<h2>SelectTicket</h2>
+@using (Html.BeginForm("BuyTicket","Tickets"))
+{
+    @Html.DropDownList("fromStation",@Model.StationNames)
+    <input type="submit" class="btn btn-primary" />
+}
+
