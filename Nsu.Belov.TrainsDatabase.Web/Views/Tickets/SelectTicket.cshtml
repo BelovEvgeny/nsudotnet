@@ -8,6 +8,7 @@
 @using (Html.BeginForm("BuyTicket","Tickets"))
 {
     @Html.DropDownList("fromStation",@Model.StationNames)
+    @Html.DropDownList("toStation",@Model.StationNames)
     <input type="submit" class="btn btn-primary" />
 }
 

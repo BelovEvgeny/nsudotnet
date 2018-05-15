@@ -8,5 +8,6 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
     public class BuyTicketViewModel
     {
         public string FromStation { get; set; }
+        public string ToStation { get; set; }
     }
 }
