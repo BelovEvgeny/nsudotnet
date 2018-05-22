@@ -10,7 +10,7 @@ namespace Nsu.Belov.TrainsDatabase.Database
 {
     public class TrainsDataContext : DbContext
     {
-        public TrainsDataContext() : base("Trains")
+        public TrainsDataContext() : base("DefaultConnection")
         {
         }
 

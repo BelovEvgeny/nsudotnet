@@ -77,45 +77,9 @@
   <ItemGroup>
     <Compile Include="DatabaseEntities\CrewMember.cs" />
     <Compile Include="DatabaseEntities\Ticket.cs" />
-    <Compile Include="Migrations\201805111409059_nothing.cs" />
-    <Compile Include="Migrations\201805111409059_nothing.Designer.cs">
-      <DependentUpon>201805111409059_nothing.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805151506196_fluent api.cs" />
-    <Compile Include="Migrations\201805151506196_fluent api.Designer.cs">
-      <DependentUpon>201805151506196_fluent api.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805151536262_add tickets.cs" />
-    <Compile Include="Migrations\201805151536262_add tickets.Designer.cs">
-      <DependentUpon>201805151536262_add tickets.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805161830557_some things.cs" />
-    <Compile Include="Migrations\201805161830557_some things.Designer.cs">
-      <DependentUpon>201805161830557_some things.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805171416515_route name.cs" />
-    <Compile Include="Migrations\201805171416515_route name.Designer.cs">
-      <DependentUpon>201805171416515_route name.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805181128466_route point bug fix.cs" />
-    <Compile Include="Migrations\201805181128466_route point bug fix.Designer.cs">
-      <DependentUpon>201805181128466_route point bug fix.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805181345245_tickets classes.cs" />
-    <Compile Include="Migrations\201805181345245_tickets classes.Designer.cs">
-      <DependentUpon>201805181345245_tickets classes.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805181756569_trip point seats.cs" />
-    <Compile Include="Migrations\201805181756569_trip point seats.Designer.cs">
-      <DependentUpon>201805181756569_trip point seats.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805190849456_dont know.cs" />
-    <Compile Include="Migrations\201805190849456_dont know.Designer.cs">
-      <DependentUpon>201805190849456_dont know.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805200950470_time fixes.cs" />
-    <Compile Include="Migrations\201805200950470_time fixes.Designer.cs">
-      <DependentUpon>201805200950470_time fixes.cs</DependentUpon>
+    <Compile Include="Migrations\201805220821481_all other.cs" />
+    <Compile Include="Migrations\201805220821481_all other.Designer.cs">
+      <DependentUpon>201805220821481_all other.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DatabaseEntities\Delay.cs" />
@@ -134,35 +98,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201805111409059_nothing.resx">
-      <DependentUpon>201805111409059_nothing.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805151506196_fluent api.resx">
-      <DependentUpon>201805151506196_fluent api.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805151536262_add tickets.resx">
-      <DependentUpon>201805151536262_add tickets.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805161830557_some things.resx">
-      <DependentUpon>201805161830557_some things.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805171416515_route name.resx">
-      <DependentUpon>201805171416515_route name.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805181128466_route point bug fix.resx">
-      <DependentUpon>201805181128466_route point bug fix.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805181345245_tickets classes.resx">
-      <DependentUpon>201805181345245_tickets classes.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805181756569_trip point seats.resx">
-      <DependentUpon>201805181756569_trip point seats.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805190849456_dont know.resx">
-      <DependentUpon>201805190849456_dont know.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805200950470_time fixes.resx">
-      <DependentUpon>201805200950470_time fixes.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201805220821481_all other.resx">
+      <DependentUpon>201805220821481_all other.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
