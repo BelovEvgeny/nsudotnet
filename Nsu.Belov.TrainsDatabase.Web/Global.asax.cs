@@ -21,8 +21,8 @@ namespace Nsu.Belov.TrainsDatabase.Web
             var container = cb.Build();
             var dr = new AutofacDependencyResolver(container);
             DependencyResolver.SetResolver(dr);
-                        FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-                        BundleConfig.RegisterBundles(BundleTable.Bundles);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
     }
 }

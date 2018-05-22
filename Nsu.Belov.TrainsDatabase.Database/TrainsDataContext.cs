@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 
 namespace Nsu.Belov.TrainsDatabase.Database
 {
@@ -21,17 +22,45 @@ namespace Nsu.Belov.TrainsDatabase.Database
                 .WithMany(r => r.RoutePoints);
             //.HasForeignKey(rp =>  rp.RouteId);
 
-            modelBuilder.Entity<VoyagePoint>()
-                .HasKey(vp => new {vp.VoyageId, vp.StationOrder})
-                .HasRequired(vp => vp.Voyage)
-                .WithMany(v => v.VoyagePoints);
-            // .HasForeignKey(vp=>vp.VoyageId)
+
+            modelBuilder.Entity<TripPoint>()
+                .HasKey(vp => new {vp.TripId, vp.StationOrder})
+                .HasRequired(vp => vp.Trip)
+                .WithMany(v => v.TripPoints);
+            // .HasForeignKey(vp=>vp.TripId)
 
 
             modelBuilder.Entity<Delay>()
-                .HasKey(d => new {d.VoyageId, d.StationOrder})
-                .HasRequired(d => d.VoyagePoint)
+                .HasKey(d => new {d.TripId, d.StationOrder})
+                .HasRequired(d => d.TripPoint)
                 .WithOptional(vp => vp.Delay);
+
+            modelBuilder.Entity<Ticket>()
+                .HasRequired(t => t.FromTripPoint)
+                .WithMany(tp => tp.TicketsFromHere)
+                .HasForeignKey(t => new {t.TripId, t.StartStationOrder})
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Ticket>()
+                .HasRequired(t => t.ToTripPoint)
+                .WithMany(tp => tp.TicketsToHere)
+                .HasForeignKey(t => new {t.TripId, t.EndStationOrder})
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RoutePoint>()
+                .HasRequired(x => x.Station)
+                .WithMany()
+                .HasForeignKey(x => x.StationId);
+
+            modelBuilder.Entity<Trip>()
+                .HasOptional(x => x.Train)
+                .WithMany(x => x.Trips)
+                .HasForeignKey(x => x.TrainId);
+
+            modelBuilder.Entity<Trip>()
+                .HasRequired(x => x.Route)
+                .WithMany()
+                .HasForeignKey(x => x.RouteId);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -42,7 +71,7 @@ namespace Nsu.Belov.TrainsDatabase.Database
         public DbSet<RoutePoint> RoutePoints { get; set; }
         public DbSet<Station> Stations { get; set; }
         public DbSet<Train> Trains { get; set; }
-        public DbSet<Voyage> Voyages { get; set; }
-        public DbSet<VoyagePoint> VoyagePoints { get; set; }
+        public DbSet<Trip> Trips { get; set; }
+        public DbSet<TripPoint> TripPoints { get; set; }
     }
 }

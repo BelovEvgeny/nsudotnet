@@ -1,0 +1,36 @@
+﻿@using Reinforced.Lattice.Templates
+@using Reinforced.Lattice.Templates.BuiltIn
+
+@using (var tpl = this.LatticeAdditionalTemplates())
+{
+    using (var window = tpl.Plugin.Confirmation("confirmDelete"))
+    {
+        <div class="modal-dialog" @tpl.Callback("ltcShowModal") @tpl.DestroyCallback("ltcHideModal")>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @window.BindDismiss("click")>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        Подтверждение удаления 
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    Вы действительно хотите удалить это?
+                    <br />
+                    <fieldset class="form-horizontal">
+                        @window.Editors()
+                    </fieldset>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @window.BindConfirm("click")>
+                        Да
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" @window.BindDismiss("click")>
+                        Нет
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+}

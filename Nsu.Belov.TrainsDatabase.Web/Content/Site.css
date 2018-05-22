@@ -18,6 +18,7 @@
     white-space: normal;
 }
 
+
 /* Set width on the form input elements since they're 100% wide by default */
 
 input,
@@ -29,4 +30,7 @@ textarea {
 .vertical-padding {
     margin-top: 50px;
     padding-bottom: 20px;
+}
+.date-container {
+  
 }

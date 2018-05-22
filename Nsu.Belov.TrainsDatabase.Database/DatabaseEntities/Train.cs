@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Nsu.Belov.TrainsDatabase.Database
+namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
 {
     public class Train
     {
         public int TrainId { get; set; }
-        public string Category { get; set; }
-        public int Capasity { get; set; }
+
+//        public string Category { get; set; }
+
+//        public int Capacity { get; set; } 
         public virtual ICollection<CrewMember> CrewMembers { get; set; }
-        public virtual ICollection<Voyage> Voyages { get; set; }
+        public virtual ICollection<Trip> Trips { get; set; }
     }
 }

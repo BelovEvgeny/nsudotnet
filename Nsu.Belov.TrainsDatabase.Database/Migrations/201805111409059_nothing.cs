@@ -34,7 +34,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
                 .PrimaryKey(t => t.TrainId);
             
             CreateTable(
-                "dbo.Voyages",
+                "dbo.Trips",
                 c => new
                     {
                         VoyageId = c.Int(nullable: false, identity: true),
@@ -79,7 +79,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
                 .PrimaryKey(t => t.StationId);
             
             CreateTable(
-                "dbo.VoyagePoints",
+                "dbo.TripPoints",
                 c => new
                     {
                         VoyageId = c.Int(nullable: false),
@@ -89,7 +89,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
                         PassengersLeft = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => new { t.VoyageId, t.StationOrder })
-                .ForeignKey("dbo.Voyages", t => t.VoyageId, cascadeDelete: true)
+                .ForeignKey("dbo.Trips", t => t.VoyageId, cascadeDelete: true)
                 .Index(t => t.VoyageId);
             
             CreateTable(
@@ -101,33 +101,33 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
                         DelaySpan = c.Time(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => new { t.VoyageId, t.StationOrder })
-                .ForeignKey("dbo.VoyagePoints", t => new { t.VoyageId, t.StationOrder })
+                .ForeignKey("dbo.TripPoints", t => new { t.VoyageId, t.StationOrder })
                 .Index(t => new { t.VoyageId, t.StationOrder });
             
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.VoyagePoints", "VoyageId", "dbo.Voyages");
-            DropForeignKey("dbo.Delays", new[] { "VoyageId", "StationOrder" }, "dbo.VoyagePoints");
-            DropForeignKey("dbo.Voyages", "Train_TrainId", "dbo.Trains");
-            DropForeignKey("dbo.Voyages", "Route_RouteId", "dbo.Routes");
+            DropForeignKey("dbo.TripPoints", "TripId", "dbo.Trips");
+            DropForeignKey("dbo.Delays", new[] { "TripId", "StationOrder" }, "dbo.TripPoints");
+            DropForeignKey("dbo.Trips", "Train_TrainId", "dbo.Trains");
+            DropForeignKey("dbo.Trips", "Route_RouteId", "dbo.Routes");
             DropForeignKey("dbo.RoutePoints", "Station_StationId", "dbo.Stations");
             DropForeignKey("dbo.RoutePoints", "RouteId", "dbo.Routes");
             DropForeignKey("dbo.CrewMembers", "Train_TrainId", "dbo.Trains");
-            DropIndex("dbo.Delays", new[] { "VoyageId", "StationOrder" });
-            DropIndex("dbo.VoyagePoints", new[] { "VoyageId" });
+            DropIndex("dbo.Delays", new[] { "TripId", "StationOrder" });
+            DropIndex("dbo.TripPoints", new[] { "TripId" });
             DropIndex("dbo.RoutePoints", new[] { "Station_StationId" });
             DropIndex("dbo.RoutePoints", new[] { "RouteId" });
-            DropIndex("dbo.Voyages", new[] { "Train_TrainId" });
-            DropIndex("dbo.Voyages", new[] { "Route_RouteId" });
+            DropIndex("dbo.Trips", new[] { "Train_TrainId" });
+            DropIndex("dbo.Trips", new[] { "Route_RouteId" });
             DropIndex("dbo.CrewMembers", new[] { "Train_TrainId" });
             DropTable("dbo.Delays");
-            DropTable("dbo.VoyagePoints");
+            DropTable("dbo.TripPoints");
             DropTable("dbo.Stations");
             DropTable("dbo.RoutePoints");
             DropTable("dbo.Routes");
-            DropTable("dbo.Voyages");
+            DropTable("dbo.Trips");
             DropTable("dbo.Trains");
             DropTable("dbo.CrewMembers");
         }

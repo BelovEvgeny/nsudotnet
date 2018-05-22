@@ -169,19 +169,33 @@
     <Compile Include="App_Start\ContainerConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CrudControllers\TripPoints.cs" />
+    <Compile Include="Controllers\CrudControllers\Trips.cs" />
+    <Compile Include="Controllers\CrudControllers\Routes.cs" />
+    <Compile Include="Controllers\CrudControllers\Trains.cs" />
+    <Compile Include="Controllers\CrudControllers\Stations.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TicketsController.cs" />
-    <Compile Include="Controllers\StationController.cs" />
+    <Compile Include="Controllers\CrudControllers\CrudController.cs" />
     <Compile Include="Controllers\TablesController.cs" />
+    <Compile Include="Controllers\TripsEditController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\BuyTicketViewModel.cs" />
+    <Compile Include="Models\ConfiguratorUtils.cs" />
+    <Compile Include="Models\CrudViewModels\TripPointViewModel.cs" />
+    <Compile Include="Models\CrudViewModels\RoutePointViewMode.cs" />
+    <Compile Include="Models\CrudViewModels\TripViewModel.cs" />
+    <Compile Include="Models\CrudViewModels\RouteViewModel.cs" />
+    <Compile Include="Models\CrudViewModels\TrainViewModel.cs" />
     <Compile Include="Models\SelectTicketViewModel.cs" />
-    <Compile Include="Models\TablesRows\StationRow.cs" />
+    <Compile Include="Models\CrudViewModels\StationViewModel.cs" />
+    <Compile Include="Models\TripEditViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\bootstrap-datetimepicker.css" />
+    <Content Include="Content\bootstrap-datetimepicker.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -193,6 +207,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\esm\popper-utils.js" />
@@ -224,6 +239,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\popper-utils.js" />
     <Content Include="Scripts\popper-utils.min.js" />
     <Content Include="Scripts\popper.js" />
@@ -231,6 +247,7 @@
     <Content Include="Scripts\Reinforced.Lattice\reinforced.lattice.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\tableassets.js" />
     <Content Include="Scripts\umd\popper-utils.js" />
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
@@ -259,14 +276,22 @@
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Tables\Index.cshtml" />
-    <Content Include="Views\Station\Index.cshtml" />
+    <Content Include="Views\Crud\Stations.cshtml" />
     <Content Include="Views\Shared\Lattice_Templates_Bootstrap.cshtml" />
     <Content Include="Scripts\Reinforced.Lattice\reinforced.lattice.js.map" />
+    <Content Include="Views\Tickets\SelectTrip.cshtml" />
     <Content Include="Views\Tickets\SelectTicket.cshtml" />
-    <Content Include="Views\Tickets\BuyTicket.cshtml" />
+    <Content Include="Views\Crud\Routes.cshtml" />
+    <Content Include="Views\Crud\RoutePointsForRoute.cshtml" />
+    <Content Include="Views\Shared\DeleteTemplate.cshtml" />
+    <Content Include="Views\Crud\Trains.cshtml" />
+    <Content Include="Views\Crud\Trips.cshtml" />
+    <Content Include="Views\TripsEdit\Index.cshtml" />
+    <Content Include="Views\Crud\TripPoints.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Route\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

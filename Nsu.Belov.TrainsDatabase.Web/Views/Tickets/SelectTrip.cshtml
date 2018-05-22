@@ -1,0 +1,36 @@
+﻿@model Nsu.Belov.TrainsDatabase.Web.Models.SelectTicketViewModel
+
+@{
+    ViewBag.Title = "Select route";
+}
+
+<script>
+    $(document).ready(function() {
+        var dateInput = $('input[id="@nameof(Model.Date)"]');
+        var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
+        dateInput.datepicker({
+            format: 'dd.mm.yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            orientation: "bottom auto"
+        });
+    })
+</script>
+<h2>Выберите маршрут и дату</h2>
+@using (Html.BeginForm("SelectTicket", "Tickets"))
+{
+    <div class="form-group">
+        <label for="@nameof(Model.DepartureStationId)">Станция отправления</label>
+        @Html.DropDownListFor(x => x.DepartureStationId, @Model.StationNames, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="@nameof(Model.ArrivalStationId)">Станция прибытия:</label>
+        @Html.DropDownListFor(x => x.ArrivalStationId, @Model.StationNames, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="@nameof(Model.Date)">Дата отправления:</label>
+        @Html.TextBoxFor(x => x.Date, new {@class = "form-control", placeholder = "MM.DD.YYYY"})
+    </div>
+    <input type="submit" class="btn btn-primary"/>
+}

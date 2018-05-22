@@ -9,6 +9,7 @@
 @using Reinforced.Lattice.Templates.Editing.Editors.Memo
 @using Reinforced.Lattice.Templates.Editing.Editors.PlainText
 @using Reinforced.Lattice.Templates.Editing.Editors.SelectList
+@using Reinforced.Lattice.Templates.Editing.Form
 @using Reinforced.Lattice.Templates.Expressions
 @using Reinforced.Lattice.Templates.Filters.Range
 @using Reinforced.Lattice.Templates.Filters.Select
@@ -869,5 +870,42 @@
         </div>
     </div>
 }
+
+@using (var t = Plugin.Edit_Form())
+{
+    <div class="modal-dialog" @this.Callback("ltcShowModal") @this.DestroyCallback("ltcHideModal")>
+        <div class="modal-content" >
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" @t.BindReject("click")><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">
+                    @using (t.If(x => x.DataObject["Id"] == (object)0))
+                    {
+                        <text>Create new entry</text>
+                        @t.Else()
+                        <text>Edit entry</text>
+                    }
+                </h4>
+            </div>
+            <div class="modal-body">
+                <fieldset class="form form-horizontal" id ="editform">
+                    @t.Editors()
+                </fieldset>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @t.BindReject("click")>Cancel</button>
+                <button type="button" class="btn btn-primary" @t.BindCommit("click")>
+                    @using (t.If(x => x.DataObject["Id"] == (object)0))
+                    {
+                        <text>Create</text>
+                        @t.Else()
+                        <text>Save</text>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+
 
 @End()

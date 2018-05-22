@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Nsu.Belov.TrainsDatabase.Database
+namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
 {
     public class Route
     {
         public int RouteId { get; set; }
-
+        public string RouteName { get; set; }
         public virtual ICollection<RoutePoint> RoutePoints { get; set; }
     }
 }

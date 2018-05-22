@@ -1,0 +1,47 @@
+﻿@using Nsu.Belov.TrainsDatabase.Web.Models
+@using Reinforced.Lattice.Commands
+@using Reinforced.Lattice.Configuration
+@using Reinforced.Lattice.Editing.Editors.PlainText
+@using Reinforced.Lattice.Editing.Form
+@using Reinforced.Lattice.Mvc
+@using Reinforced.Lattice.Plugins.Toolbar
+@using Reinforced.Lattice.Templates
+@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.RoutePointViewModel
+
+@{
+    ViewBag.Title = "RoutePoints";
+    var conf = Model.Configurator;
+    conf.Column(x => x.StationId).DataOnly();
+    conf.Column(x => x.RouteId).DataOnly();
+    conf.EditingForm(f =>
+    {
+        f.EditPlainText(x => x.StationName);
+        f.RenderTo("#ltcModal");
+    }, c => c.Event("click").Selector("._beginEdit"));
+    conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
+    conf.AddUiColumn<string>("Actions")
+        .Razor(@<div>
+                   <button class="btn btn-xs btn-warning _beginEdit">
+                       <span class="glyphicon glyphicon-pencil"></span>
+                   </button>
+                   <button class="btn btn-xs btn-danger _remove">
+                       <span class="glyphicon glyphicon-remove"></span>
+                   </button>
+               </div>)
+        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"))
+        ;
+
+    conf.Command("Remove", x => x.ConfigureRemoval());
+}
+
+<h2>Станции маршрута</h2>
+
+<div id="table"></div>
+
+@section scripts {
+    @* Render our templates *@
+    @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
+
+    @* Instantiate our table and put it to JS window.$$table variable *@
+    @Model.Configurator.InitializationScript("table", "window.$$table")
+}
