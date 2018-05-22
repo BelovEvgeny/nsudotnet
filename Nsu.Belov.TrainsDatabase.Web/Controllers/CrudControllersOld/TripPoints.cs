@@ -69,6 +69,8 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
                     .Message(LatticeMessage.User("failure", "Editing", $"Save exception: {e.Message}"))
                 );
             }
+
+            tripripPointRow.TripId = tripPoint.TripId;
             return latticeData.Adjust(x => x
                 .UpdateRow(tripripPointRow)
                 .Message(LatticeMessage.User("success", "Editing", "TripPoint saved"))

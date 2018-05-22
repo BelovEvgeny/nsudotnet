@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 using Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels;
@@ -19,7 +18,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
         {
             var trainViewModel = new TrainViewModel()
             {
-                Configurator = new Configurator<Train, Train>()
+                Configurator = new Configurator<Train, TrainRow>()
                     .Configure()
                     .Url(Url.Action(nameof(HandleTrains)))
             };
@@ -28,52 +27,45 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
 
         public ActionResult HandleTrains()
         {
-            var conf = new Configurator<Train, Train>().Configure();
+            var conf = new Configurator<Train, TrainRow>().Configure();
             var handler = conf.CreateMvcHandler(ControllerContext);
             handler.AddEditHandler(EditTrains);
             handler.AddCommandHandler("Remove", RemoveTrain);
             return handler.Handle(_context.Trains.OrderBy(x => x.TrainId));
         }
 
-        public TableAdjustment EditTrains(LatticeData<Train, Train> latticeData, Train trainRow)
+        public TableAdjustment EditTrains(LatticeData<Train, TrainRow> latticeData, TrainRow trainRow)
         {
-            Train train = _context.Trains
-                .FirstOrDefault(x => x.TrainId == trainRow.TrainId);
-            if (train == null)
+            Train train;
+            if (trainRow.TrainId == 0)
             {
-                train = new Train()
-                {
-                    TrainId = trainRow.TrainId
-                };
+                train = new Train();
                 _context.Trains.Add(train);
             }
-
-            try
+            else
             {
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Editing", $"Save exception: {e.Message}"))
-                );
+                train = _context.Trains
+                    .FirstOrDefault(x => x.TrainId == trainRow.TrainId);
             }
 
+            // train.Capacity = trainRow.Capacity;
+//            train.Category = trainRow.Category;
+            _context.SaveChanges();
             trainRow.TrainId = train.TrainId;
             return latticeData.Adjust(x => x
-                .UpdateRow(trainRow)
+                .Update(trainRow)
                 .Message(LatticeMessage.User("success", "Editing", "Train saved"))
             );
         }
 
-        public TableAdjustment RemoveTrain(LatticeData<Train, Train> latticeData)
+        public TableAdjustment RemoveTrain(LatticeData<Train, TrainRow> latticeData)
         {
             var subj = latticeData.CommandSubject();
             var train = _context.Trains.FirstOrDefault(x => x.TrainId == subj.TrainId);
             _context.Trains.Remove(train);
             _context.SaveChanges();
             return latticeData.Adjust(x => x
-                .RemoveExact(subj)
+                .Remove(subj)
                 .Message(LatticeMessage.User("success", "Remove", "Station removed"))
             );
         }

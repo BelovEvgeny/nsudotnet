@@ -169,27 +169,27 @@
     <Compile Include="App_Start\ContainerConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CrudControllers\CrudController.cs" />
+    <Compile Include="Controllers\CrudControllers\Routes.cs" />
+    <Compile Include="Controllers\CrudControllers\Stations.cs" />
+    <Compile Include="Controllers\CrudControllers\Trains.cs" />
     <Compile Include="Controllers\CrudControllers\TripPoints.cs" />
     <Compile Include="Controllers\CrudControllers\Trips.cs" />
-    <Compile Include="Controllers\CrudControllers\Routes.cs" />
-    <Compile Include="Controllers\CrudControllers\Trains.cs" />
-    <Compile Include="Controllers\CrudControllers\Stations.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TicketsController.cs" />
-    <Compile Include="Controllers\CrudControllers\CrudController.cs" />
     <Compile Include="Controllers\TablesController.cs" />
     <Compile Include="Controllers\TripsEditController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ConfiguratorUtils.cs" />
-    <Compile Include="Models\CrudViewModels\TripPointViewModel.cs" />
     <Compile Include="Models\CrudViewModels\RoutePointViewMode.cs" />
-    <Compile Include="Models\CrudViewModels\TripViewModel.cs" />
     <Compile Include="Models\CrudViewModels\RouteViewModel.cs" />
-    <Compile Include="Models\CrudViewModels\TrainViewModel.cs" />
-    <Compile Include="Models\SelectTicketViewModel.cs" />
     <Compile Include="Models\CrudViewModels\StationViewModel.cs" />
+    <Compile Include="Models\CrudViewModels\TrainViewModel.cs" />
+    <Compile Include="Models\CrudViewModels\TripPointViewModel.cs" />
+    <Compile Include="Models\CrudViewModels\TripViewModel.cs" />
+    <Compile Include="Models\SelectTicketViewModel.cs" />
     <Compile Include="Models\TripEditViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -282,7 +282,7 @@
     <Content Include="Views\Tickets\SelectTrip.cshtml" />
     <Content Include="Views\Tickets\SelectTicket.cshtml" />
     <Content Include="Views\Crud\Routes.cshtml" />
-    <Content Include="Views\Crud\RoutePointsForRoute.cshtml" />
+    <Content Include="Views\Crud\RoutePoints.cshtml" />
     <Content Include="Views\Shared\DeleteTemplate.cshtml" />
     <Content Include="Views\Crud\Trains.cshtml" />
     <Content Include="Views\Crud\Trips.cshtml" />

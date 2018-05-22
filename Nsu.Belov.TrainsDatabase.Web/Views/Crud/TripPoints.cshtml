@@ -7,6 +7,7 @@
 @using Reinforced.Lattice.Filters
 @using Reinforced.Lattice.Filters.Value
 @using Reinforced.Lattice.Mvc
+@using Reinforced.Lattice.Plugins.Ordering
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
 @model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.TripPointViewModel
@@ -38,6 +39,9 @@
                </div>)
         .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
     conf.Command("Remove", x => x.ConfigureRemoval());
+
+    conf.Column(x => x.TripId).Orderable(x => x.TripId, ui => ui.UseClientOrdering());
+    conf.Column(x => x.StationOrder).Orderable(x => x.StationOrder, ui => ui.UseClientOrdering());
 
     conf.Column(x => x.TripId).FilterValueUi(ui => ui.ClientFiltering());
     conf.Column(x => x.StationOrder).FilterValueUi(ui => ui.ClientFiltering());

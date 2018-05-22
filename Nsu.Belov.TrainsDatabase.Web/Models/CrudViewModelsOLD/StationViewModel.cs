@@ -5,12 +5,18 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels
 {
     public class StationViewModel
     {
-        public Configurator<Station, Station> Configurator { get; set; }
+        public Configurator<Station, StationRow> Configurator { get; set; }
+    }
+
+    public class StationRow
+    {
+        public int StationId { get; set; }
+        public string StationName { get; set; }
     }
 
     public static class StationTable
     {
-        public static Configurator<Station, Station> Configure(this Configurator<Station, Station> conf)
+        public static Configurator<Station, StationRow> Configure(this Configurator<Station, StationRow> conf)
         {
             conf.DefaultTable();
             conf.PrimaryKey(x => x.StationId);

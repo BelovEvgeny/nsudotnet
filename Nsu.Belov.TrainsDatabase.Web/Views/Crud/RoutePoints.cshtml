@@ -7,16 +7,20 @@
 @using Reinforced.Lattice.Plugins.Ordering
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
-@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.RouteViewModel
+@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.RoutePointViewModel
 
 @{
-    ViewBag.Title = "Routes";
+    ViewBag.Title = "RoutePoints";
     var conf = Model.Configurator;
+    conf.Column(x => x.RouteId).Orderable(x => x.RouteId, ui => ui.UseClientOrdering());
+    conf.Column(x => x.StationOrder).Orderable(x => x.StationOrder, ui => ui.UseClientOrdering());
+
 
     conf.EditingForm(f =>
     {
         f.EditPlainText(x => x.RouteId);
-        f.EditPlainText(x => x.RouteName);
+        f.EditPlainText(x => x.StationOrder);
+        f.EditPlainText(x => x.StationId);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
@@ -29,14 +33,12 @@
                        <span class="glyphicon glyphicon-remove"></span>
                    </button>
                </div>)
-        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"))
-        ;
-    conf.Command("Remove", x => x.ConfigureRemoval());
+        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove")).DisplayOrder(99);
 
-    conf.Column(x => x.RouteId).Orderable(x => x.RouteId, ui => ui.UseClientOrdering());
+    conf.Command("Remove", x => x.ConfigureRemoval());
 }
 
-<h2>Маршруты</h2>
+<h2>Станции маршрута</h2>
 
 <div id="table"></div>
 

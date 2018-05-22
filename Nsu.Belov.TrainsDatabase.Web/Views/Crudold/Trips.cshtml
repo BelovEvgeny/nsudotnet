@@ -4,19 +4,23 @@
 @using Reinforced.Lattice.Editing.Editors.PlainText
 @using Reinforced.Lattice.Editing.Form
 @using Reinforced.Lattice.Mvc
-@using Reinforced.Lattice.Plugins.Ordering
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
-@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.RouteViewModel
+@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.TripViewModel
+
 
 @{
     ViewBag.Title = "Routes";
     var conf = Model.Configurator;
+    conf.Column(x => x.RouteId)
+        .Razor(@<a href="@Url.Action("RoutePointsForRoute", "Crud", new {routeId = "{RouteId}"})">{RouteId}</a>);
+
 
     conf.EditingForm(f =>
     {
-        f.EditPlainText(x => x.RouteId);
-        f.EditPlainText(x => x.RouteName);
+        f.EditPlainText(t => t.TripId);
+        f.EditPlainText(t => t.RouteId);
+        f.EditPlainText(t => t.TrainId);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
@@ -32,8 +36,6 @@
         .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"))
         ;
     conf.Command("Remove", x => x.ConfigureRemoval());
-
-    conf.Column(x => x.RouteId).Orderable(x => x.RouteId, ui => ui.UseClientOrdering());
 }
 
 <h2>Маршруты</h2>

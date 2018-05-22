@@ -2,6 +2,7 @@
 @using Reinforced.Lattice.Editing.Editors.PlainText
 @using Reinforced.Lattice.Editing.Form
 @using Reinforced.Lattice.Mvc
+@using Reinforced.Lattice.Plugins.Ordering
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
 @model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.StationViewModel
@@ -11,6 +12,7 @@
     var conf = Model.Configurator;
     conf.EditingForm(f =>
     {
+        f.EditPlainText(x => x.StationId); 
         f.EditPlainText(x => x.StationName); 
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
@@ -24,13 +26,15 @@
                        <span class="glyphicon glyphicon-remove"></span>
                    </button>
                </div>)
-        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"))
-        ;
+        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
+
+    conf.Column(x => x.StationId).Orderable(x => x.StationId, ui => ui.UseClientOrdering());
 }
 
 <div id="table"></div>
 
 @section scripts {
+    @{ Html.RenderPartial("DeleteTemplate"); }
     @* Render our templates *@
     @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
 

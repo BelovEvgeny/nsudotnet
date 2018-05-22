@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 using Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels;
@@ -19,7 +18,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
         {
             var vm = new RouteViewModel()
             {
-                Configurator = new Configurator<Route, Route>()
+                Configurator = new Configurator<Route, RouteRow>()
                     .Configure()
                     .Url(Url.Action(nameof(HandleRoutes)))
             };
@@ -28,22 +27,19 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
 
         public ActionResult HandleRoutes()
         {
-            var conf = new Configurator<Route, Route>().Configure();
+            var conf = new Configurator<Route, RouteRow>().Configure();
             var handler = conf.CreateMvcHandler(ControllerContext);
             handler.AddEditHandler(EditRoute);
             handler.AddCommandHandler("Remove", RemoveRoute);
             return handler.Handle(_context.Routes.OrderBy(x => x.RouteId));
         }
 
-        public TableAdjustment EditRoute(LatticeData<Route, Route> latticeData, Route routeRow)
+        public TableAdjustment EditRoute(LatticeData<Route, RouteRow> latticeData, RouteRow routeRow)
         {
-            Route route = _context.Routes.FirstOrDefault(x => x.RouteId == routeRow.RouteId);
-            if (route == null)
+            Route route;
+            if (routeRow.RouteId == 0)
             {
-                route = new Route()
-                {
-                    RouteId = routeRow.RouteId
-                };
+                route = new Route();
                 _context.Routes.Add(route);
             }
             else
@@ -52,32 +48,23 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
                     .FirstOrDefault(x => x.RouteId == routeRow.RouteId);
             }
 
-            try
-            {
-                route.RouteName = routeRow.RouteName;
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Editing", $"Save exception: {e.Message}"))
-                );
-            }
+            route.RouteName = routeRow.RouteName;
+            _context.SaveChanges();
             routeRow.RouteId = route.RouteId;
             return latticeData.Adjust(x => x
-                .UpdateRow(routeRow)
+                .Update(routeRow)
                 .Message(LatticeMessage.User("success", "Editing", "Route saved"))
             );
         }
 
-        public TableAdjustment RemoveRoute(LatticeData<Route, Route> latticeData)
+        public TableAdjustment RemoveRoute(LatticeData<Route, RouteRow> latticeData)
         {
             var subj = latticeData.CommandSubject();
             var route = _context.Routes.FirstOrDefault(x => x.RouteId == subj.RouteId);
             _context.Routes.Remove(route);
             _context.SaveChanges();
             return latticeData.Adjust(x => x
-                .RemoveExact(subj)
+                .Remove(subj)
                 .Message(LatticeMessage.User("success", "Remove", "Route removed"))
             );
         }

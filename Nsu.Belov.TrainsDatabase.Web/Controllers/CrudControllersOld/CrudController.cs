@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Nsu.Belov.TrainsDatabase.Database;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
@@ -23,43 +22,43 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
             this._context = context;
         }
 
-        public ActionResult RoutePoints()
+        public ActionResult RoutePointsForRoute(int routeId)
         {
             var vm = new RoutePointViewModel()
             {
-                Configurator = new Configurator<RoutePoint, RoutePoint>()
+                Configurator = new Configurator<RoutePoint, RoutePointRow>()
                     .Configure()
-                    .Url(Url.Action(nameof(HandleRoutePoints)))
+                    .Url(Url.Action(nameof(HandleRoutePoints), new { routeId }))
             };
             return View(vm);
         }
 
-        public ActionResult HandleRoutePoints()
+        public ActionResult HandleRoutePoints(int routeId)
         {
-            var conf = new Configurator<RoutePoint, RoutePoint>().Configure();
+            var conf = new Configurator<RoutePoint, RoutePointRow>().Configure();
             var handler = conf.CreateMvcHandler(ControllerContext);
-            handler.AddEditHandler(EditRoutePoint);
+            handler.AddEditHandler((latticeData, rpRow) => EditRoutePoint(latticeData, rpRow, routeId));
             handler.AddCommandHandler("Remove", RemoveRoutePoint);
             var routePoints = _context.RoutePoints
+                .Where(x => x.RouteId == routeId)
                 .OrderBy(x => x.StationOrder);
             return handler.Handle(routePoints);
         }
 
 
-        public TableAdjustment EditRoutePoint(LatticeData<RoutePoint, RoutePoint> latticeData,
-            RoutePoint routePointRow)
+        public TableAdjustment EditRoutePoint(LatticeData<RoutePoint, RoutePointRow> latticeData,
+            RoutePointRow routePointRow, int routeId)
         {
-        RoutePoint routePoint = _context.RoutePoints
-            .FirstOrDefault(x => x.RouteId == routePointRow.RouteId
-                                 && x.StationOrder == routePointRow.StationOrder);
-
-       
-            if (routePoint == null)
+            RoutePoint routePoint;
+            if (routePointRow.RouteId == 0)
             {
                 routePoint = new RoutePoint
                 {
-                    RouteId = routePointRow.RouteId,
-                    StationOrder = routePointRow.StationOrder
+                    RouteId = routeId,
+                    StationOrder = _context.RoutePoints.Where(x => x.RouteId == routeId)
+                                       .Select(x => x.StationOrder)
+                                       .DefaultIfEmpty()
+                                       .Max() + 1
                 };
                 _context.RoutePoints.Add(routePoint);
             }
@@ -69,26 +68,29 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
                     .FirstOrDefault(x =>
                         x.RouteId == routePointRow.RouteId && x.StationOrder == routePointRow.StationOrder);
             }
-            
 
-            try
-            {
-                routePoint.StationId = routePointRow.StationId;
-                _context.SaveChanges();
-            }
-            catch (Exception e)
+            Station station = _context.Stations.FirstOrDefault(x => x.StationName == routePointRow.StationName);
+            if (station == null)
             {
                 return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Editing", $"Save exception: {e.Message}"))
+                    .Message(LatticeMessage.User("failure", "Editing",
+                        $"There is no station with name {routePointRow.StationName}"))
                 );
             }
+
+            routePoint.Station = station;
+            _context.SaveChanges();
+
+            routePointRow.RouteId = routePoint.RouteId;
+            routePointRow.StationOrder = routePoint.StationOrder;
+            routePointRow.StationId = routePoint.StationId;
             return latticeData.Adjust(x => x
-                .UpdateRow(routePointRow)
-                .Message(LatticeMessage.User("success", "Editing", "RoutePoint saved"))
+                .Update(routePointRow)
+                .Message(LatticeMessage.User("success", "Editing", "Route saved"))
             );
         }
 
-        public TableAdjustment RemoveRoutePoint(LatticeData<RoutePoint, RoutePoint> latticeData)
+        public TableAdjustment RemoveRoutePoint(LatticeData<RoutePoint, RoutePointRow> latticeData)
         {
             var subj = latticeData.CommandSubject();
             var routePoint =
@@ -97,7 +99,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
             _context.RoutePoints.Remove(routePoint);
             _context.SaveChanges();
             return latticeData.Adjust(x => x
-                .RemoveExact(subj)
+                .Remove(subj)
                 .Message(LatticeMessage.User("success", "Remove", "RoutePoint removed"))
             );
         }

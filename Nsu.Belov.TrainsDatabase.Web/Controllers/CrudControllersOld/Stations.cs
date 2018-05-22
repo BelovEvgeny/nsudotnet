@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 using Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels;
@@ -19,7 +18,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
         {
             var stationViewModel = new StationViewModel()
             {
-                Configurator = new Configurator<Station, Station>()
+                Configurator = new Configurator<Station, StationRow>()
                     .Configure()
                     .Url(Url.Action(nameof(HandleStations)))
             };
@@ -28,53 +27,44 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
 
         public ActionResult HandleStations()
         {
-            var conf = new Configurator<Station, Station>().Configure();
+            var conf = new Configurator<Station, StationRow>().Configure();
             var handler = conf.CreateMvcHandler(ControllerContext);
             handler.AddEditHandler(EditStaton);
             handler.AddCommandHandler("Remove", RemoveStation);
             return handler.Handle(_context.Stations.OrderBy(x => x.StationId));
         }
 
-        public TableAdjustment EditStaton(LatticeData<Station, Station> latticeData, Station stationRow)
+        public TableAdjustment EditStaton(LatticeData<Station, StationRow> latticeData, StationRow stationRow)
         {
-            Station station = _context.Stations
-                .FirstOrDefault(x => x.StationId == stationRow.StationId);
-            if (station == null)
+            Station station;
+            if (stationRow.StationId == 0)
             {
-                station = new Station()
-                {
-                    StationId = stationRow.StationId
-                };
+                station = new Station();
                 _context.Stations.Add(station);
             }
-
-            try
+            else
             {
-                station.StationName = stationRow.StationName;
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Editing", $"Save exception: {e.Message}"))
-                );
+                station = _context.Stations
+                    .FirstOrDefault(x => x.StationId == stationRow.StationId);
             }
 
+            station.StationName = stationRow.StationName;
+            _context.SaveChanges();
             stationRow.StationId = station.StationId;
             return latticeData.Adjust(x => x
-                .UpdateRow(stationRow)
+                .Update(stationRow)
                 .Message(LatticeMessage.User("success", "Editing", "Station saved"))
             );
         }
 
-        public TableAdjustment RemoveStation(LatticeData<Station, Station> latticeData)
+        public TableAdjustment RemoveStation(LatticeData<Station, StationRow> latticeData)
         {
             var subj = latticeData.CommandSubject();
             var station = _context.Stations.FirstOrDefault(x => x.StationId == subj.StationId);
             _context.Stations.Remove(station);
             _context.SaveChanges();
             return latticeData.Adjust(x => x
-                .RemoveExact(subj)
+                .Remove(subj)
                 .Message(LatticeMessage.User("success", "Remove", "Station removed"))
             );
         }

@@ -5,17 +5,21 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels
 {
     public class RouteViewModel
     {
-        public Configurator<Route, Route> Configurator { get; set; }
+        public Configurator<Route, RouteRow> Configurator { get; set; }
     }
-   
+
+    public class RouteRow
+    {
+        public int RouteId { get; set; }
+        public string RouteName { get; set; }
+    }
 
     public static class RouteTable
     {
-        public static Configurator<Route, Route> Configure(this Configurator<Route, Route> conf)
+        public static Configurator<Route, RouteRow> Configure(this Configurator<Route, RouteRow> conf)
         {
             conf.DefaultTable();
             conf.PrimaryKey(x => x.RouteId);
-            conf.NotAColumn(x=>x .RoutePoints);
             return conf;
         }
     }
