@@ -7,22 +7,21 @@
 @using Reinforced.Lattice.Filters
 @using Reinforced.Lattice.Filters.Value
 @using Reinforced.Lattice.Mvc
-@using Reinforced.Lattice.Plugins.Ordering
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
-@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.TripPointViewModel
+@model TripPointForViewModel
 
 @{
-    ViewBag.Title = "TripPoints";
+    ViewBag.Title = "TripPointsForTrip";
+
     var conf = Model.Configurator;
-    conf.Column(x => x.ArrivalTime).Format("`parseDateTime({#})`");
     conf.Column(x => x.DepartureTime).Format("`parseDateTime({#})`");
+    conf.Column(x => x.ArrivalTime).Format("`parseDateTime({#})`");
     conf.EditingForm(f =>
     {
-        f.EditPlainText(x => x.TripId);
-        f.EditPlainText(x => x.StationOrder);
         f.EditPlainText(x => x.ArrivalTime);
         f.EditPlainText(x => x.DepartureTime);
+        f.EditPlainText(x => x.DelayinMinutes);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
@@ -38,16 +37,16 @@
         .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
     conf.Command("Remove", x => x.ConfigureRemoval());
 
-    conf.Column(x => x.TripId).Orderable(x => x.TripId, ui => ui.UseClientOrdering());
-    conf.Column(x => x.StationOrder).Orderable(x => x.StationOrder, ui => ui.UseClientOrdering());
-
     conf.Column(x => x.TripId).FilterValueUi(ui => ui.ClientFiltering());
     conf.Column(x => x.StationOrder).FilterValueUi(ui => ui.ClientFiltering());
-    conf.Column(x => x.ArrivalTime).FilterValueUi(ui => ui.CompareOnlyDates().ClientFiltering());
+    //    conf.Column(x => x.StationName).FilterValueUi(ui => ui.ClientFiltering());
     conf.Column(x => x.DepartureTime).FilterValueUi(ui => ui.CompareOnlyDates().ClientFiltering());
+    conf.Column(x => x.ArrivalTime).FilterValueUi(ui => ui.CompareOnlyDates().ClientFiltering());
+    conf.Column(x => x.FirstClassSeatsLeft).FilterValueUi(ui => ui.ClientFiltering());
+    conf.Column(x => x.SecondClassSeatsLeft).FilterValueUi(ui => ui.ClientFiltering());
+    conf.Column(x => x.DelayinMinutes).FilterValueUi(ui => ui.ClientFiltering());
 }
-
-<h2>TripPoints</h2>
+<h2>TripPointsForTrip</h2>
 
 <div id="table"></div>
 

@@ -15,6 +15,8 @@ namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
 
         public SeatsType SeatsType { get; set; }
 
+        public Trip Trip { get; set; }
+
         public virtual TripPoint FromTripPoint { get; set; }
 
         public virtual TripPoint ToTripPoint { get; set; }

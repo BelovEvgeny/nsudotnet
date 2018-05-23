@@ -9,7 +9,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
        
         public int StationOrder { get; set; }
 
-        public Route Route { get; set; }
+        public virtual Route Route { get; set; }
 
         public virtual Station Station { get; set; }
 

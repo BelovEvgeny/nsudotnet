@@ -2,20 +2,19 @@
 @using Reinforced.Lattice.Commands
 @using Reinforced.Lattice.Configuration
 @using Reinforced.Lattice.Editing.Editors.PlainText
+@using Reinforced.Lattice.Editing.Editors.SelectList
 @using Reinforced.Lattice.Editing.Form
 @using Reinforced.Lattice.Mvc
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
-@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.RoutePointViewModel
+@model RoutePointViewModel
 
 @{
     ViewBag.Title = "RoutePoints";
     var conf = Model.Configurator;
-    conf.Column(x => x.StationId).DataOnly();
-    conf.Column(x => x.RouteId).DataOnly();
     conf.EditingForm(f =>
     {
-        f.EditPlainText(x => x.StationName);
+        f.EditSelectList(x => x.StationName).Items(Model.SationsNames);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
@@ -39,6 +38,7 @@
 <div id="table"></div>
 
 @section scripts {
+    @{ Html.RenderPartial("DeleteTemplate"); }
     @* Render our templates *@
     @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
 

@@ -81,6 +81,22 @@
     <Compile Include="Migrations\201805220821481_all other.Designer.cs">
       <DependentUpon>201805220821481_all other.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201805221220307_capacity fix.cs" />
+    <Compile Include="Migrations\201805221220307_capacity fix.Designer.cs">
+      <DependentUpon>201805221220307_capacity fix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805221347594_tripTickets.cs" />
+    <Compile Include="Migrations\201805221347594_tripTickets.Designer.cs">
+      <DependentUpon>201805221347594_tripTickets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805230645486_not nul Trip_TrainId.cs" />
+    <Compile Include="Migrations\201805230645486_not nul Trip_TrainId.Designer.cs">
+      <DependentUpon>201805230645486_not nul Trip_TrainId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805230658139_virtual Delay.cs" />
+    <Compile Include="Migrations\201805230658139_virtual Delay.Designer.cs">
+      <DependentUpon>201805230658139_virtual Delay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="DatabaseEntities\Delay.cs" />
     <Compile Include="DatabaseEntities\Train.cs" />
@@ -100,6 +116,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201805220821481_all other.resx">
       <DependentUpon>201805220821481_all other.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805221220307_capacity fix.resx">
+      <DependentUpon>201805221220307_capacity fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805221347594_tripTickets.resx">
+      <DependentUpon>201805221347594_tripTickets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805230645486_not nul Trip_TrainId.resx">
+      <DependentUpon>201805230645486_not nul Trip_TrainId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805230658139_virtual Delay.resx">
+      <DependentUpon>201805230658139_virtual Delay.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

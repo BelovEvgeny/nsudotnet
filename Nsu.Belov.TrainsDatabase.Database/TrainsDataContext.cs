@@ -47,15 +47,21 @@ namespace Nsu.Belov.TrainsDatabase.Database
                 .HasForeignKey(t => new {t.TripId, t.EndStationOrder})
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<Ticket>()
+                .HasRequired(x => x.Trip)
+                .WithMany()
+                .HasForeignKey(x => x.TripId);
+
             modelBuilder.Entity<RoutePoint>()
                 .HasRequired(x => x.Station)
                 .WithMany()
                 .HasForeignKey(x => x.StationId);
 
             modelBuilder.Entity<Trip>()
-                .HasOptional(x => x.Train)
+                .HasRequired(x => x.Train)
                 .WithMany(x => x.Trips)
                 .HasForeignKey(x => x.TrainId);
+
 
             modelBuilder.Entity<Trip>()
                 .HasRequired(x => x.Route)
@@ -72,6 +78,7 @@ namespace Nsu.Belov.TrainsDatabase.Database
         public DbSet<Station> Stations { get; set; }
         public DbSet<Train> Trains { get; set; }
         public DbSet<Trip> Trips { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TripPoint> TripPoints { get; set; }
     }
 }

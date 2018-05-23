@@ -80,6 +80,7 @@
       <HintPath>..\packages\Reinforced.Lattice.Bundle.Mvc5.1.0.30\lib\net45\Reinforced.Lattice.Templates.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData" />
@@ -176,9 +177,10 @@
     <Compile Include="Controllers\CrudControllers\TripPoints.cs" />
     <Compile Include="Controllers\CrudControllers\Trips.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\RoutesController.cs" />
     <Compile Include="Controllers\TicketsController.cs" />
     <Compile Include="Controllers\TablesController.cs" />
-    <Compile Include="Controllers\TripsEditController.cs" />
+    <Compile Include="Controllers\TripsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -189,8 +191,9 @@
     <Compile Include="Models\CrudViewModels\TrainViewModel.cs" />
     <Compile Include="Models\CrudViewModels\TripPointViewModel.cs" />
     <Compile Include="Models\CrudViewModels\TripViewModel.cs" />
+    <Compile Include="Models\RouteViewModel.cs" />
     <Compile Include="Models\SelectTicketViewModel.cs" />
-    <Compile Include="Models\TripEditViewModel.cs" />
+    <Compile Include="Models\TripViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -286,8 +289,11 @@
     <Content Include="Views\Shared\DeleteTemplate.cshtml" />
     <Content Include="Views\Crud\Trains.cshtml" />
     <Content Include="Views\Crud\Trips.cshtml" />
-    <Content Include="Views\TripsEdit\Index.cshtml" />
+    <Content Include="Views\Trips\Index.cshtml" />
     <Content Include="Views\Crud\TripPoints.cshtml" />
+    <Content Include="Views\Trips\TripPointsForTrip.cshtml" />
+    <Content Include="Views\Routes\Routes.cshtml" />
+    <Content Include="Views\Routes\RoutePointsForRoute.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

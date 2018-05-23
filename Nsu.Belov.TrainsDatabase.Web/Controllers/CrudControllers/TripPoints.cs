@@ -56,8 +56,6 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers.CrudControllers
 
             try
             {
-                tripPoint.FirstClassSeats = tripripPointRow.FirstClassSeats;
-                tripPoint.SecondClassSeats = tripripPointRow.SecondClassSeats;
                 tripPoint.DepartureTime = tripripPointRow.DepartureTime;
                 tripPoint.ArrivalTime = tripripPointRow.ArrivalTime;
 

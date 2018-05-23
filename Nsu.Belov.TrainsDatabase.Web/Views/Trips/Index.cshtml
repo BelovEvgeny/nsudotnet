@@ -3,6 +3,7 @@
 @using Reinforced.Lattice.Commands
 @using Reinforced.Lattice.Configuration
 @using Reinforced.Lattice.Editing.Editors.PlainText
+@using Reinforced.Lattice.Editing.Editors.SelectList
 @using Reinforced.Lattice.Editing.Form
 @using Reinforced.Lattice.Filters
 @using Reinforced.Lattice.Filters.Range
@@ -10,22 +11,28 @@
 @using Reinforced.Lattice.Mvc
 @using Reinforced.Lattice.Plugins.Toolbar
 @using Reinforced.Lattice.Templates
-@model Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels.TripEditViewModel
+@model TripEditViewModel
 
 @{
     ViewBag.Title = "Расписание поездок";
     var conf = Model.Configurator;
+    conf.Column(x => x.TripId)
+        .Razor(@<div>
+                   {TripId} <br>
+                   <a href="@Url.Action("TripPointsForTrip", "Trips", new {tripId = "{TripId}"})"> открыть</a>
+               </div>);
     conf.Column(x => x.RouteId)
-        .Razor(@<a href="@Url.Action("RoutePointsForRoute", "Crud", new {routeId = "{RouteId}"})">{RouteId}</a>);
+        .Razor(@<div>
+                   {RouteId} <br>
+                   <a href="@Url.Action("RoutePointsForRoute", "Routes", new {routeId = "{RouteId}"})">открыть</a>
+               </div>);
 
-    conf.Column(x => x.RouteName)
-        .Razor(@<a href="@Url.Action("RoutePointsForRoute", "Crud", new {routeId = "{RouteId}"})">{RouteName}</a>);
     conf.Column(x => x.DepatrureDate).Format("`parseDateTime({#})`");
     conf.Column(x => x.ArrivalDate).Format("`parseDateTime({#})`");
     conf.EditingForm(f =>
     {
-        f.EditPlainText(x => x.RouteName);
-        f.EditPlainText(x => x.DepatrureDate);
+        f.EditSelectList(x => x.RouteId).Items(Model.RouteIds);
+        f.EditSelectList(x => x.TrainId).Items(Model.TrainIds);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
@@ -54,6 +61,7 @@
 
 <h2>Маршруты</h2>
 <div id="table"></div>
+
 @section scripts {
     @{ Html.RenderPartial("DeleteTemplate"); }
     @* Render our templates *@

@@ -9,8 +9,10 @@ namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
         public int RouteId { get; set; }
         public virtual Train Train { get; set; }
 
-        public int? TrainId { get; set; }
+        public int TrainId { get; set; }
 
         public virtual ICollection<TripPoint> TripPoints { get; set; }
+
+        public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

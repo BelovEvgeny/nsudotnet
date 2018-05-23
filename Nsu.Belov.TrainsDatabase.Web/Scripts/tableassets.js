@@ -34,10 +34,13 @@ var ltcPutDateToDatepicker = function(element, date) {
 var ltcGetDateFromDatepicker = function(element, date) {
     var dt = $(element).data("DateTimePicker").date();
     if (dt == null || dt == undefined) return null;
-    if (dt._isAMomentObject) return dt.toDate();
-    if (!dt.getTime) return null;
-//    dt.setHours(dt.getHours() - dt.getTimezoneOffset() / 60);
-    return dt;
+    if (dt._isAMomentObject) {
+        var toDate = dt.toDate();
+        toDate.setHours(toDate.getHours() - toDate.getTimezoneOffset() / 60);
+        return toDate;
+    } else
+        return dt;
+   // if (!dt.getTime) return null;
 }
 
 var ltcDestroyDatepicker = function(element) {
