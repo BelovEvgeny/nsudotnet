@@ -7,13 +7,13 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class notnulTrip_TrainId : IMigrationMetadata
+    public sealed partial class allotherv2 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(notnulTrip_TrainId));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(allotherv2));
         
         string IMigrationMetadata.Id
         {
-            get { return "201805230645486_not nul Trip_TrainId"; }
+            get { return "201805251939407_all other v2"; }
         }
         
         string IMigrationMetadata.Source

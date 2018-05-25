@@ -13,11 +13,15 @@ namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
         public int StartStationOrder { get; set; }
         public int EndStationOrder { get; set; }
 
+        public string UserId { get; set; }
+
         public SeatsType SeatsType { get; set; }
 
         public Trip Trip { get; set; }
 
-        public virtual TripPoint FromTripPoint { get; set; }
+        public virtual ApplicationUser Passenger { get; set; }
+
+    public virtual TripPoint FromTripPoint { get; set; }
 
         public virtual TripPoint ToTripPoint { get; set; }
     }

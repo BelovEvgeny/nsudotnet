@@ -4,11 +4,12 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 
 namespace Nsu.Belov.TrainsDatabase.Database
 {
-    public class TrainsDataContext : DbContext
+    public class TrainsDataContext : IdentityDbContext<ApplicationUser>
     {
         public TrainsDataContext() : base("DefaultConnection")
         {
@@ -19,15 +20,15 @@ namespace Nsu.Belov.TrainsDatabase.Database
             modelBuilder.Entity<RoutePoint>()
                 .HasKey(rp => new {rp.RouteId, rp.StationOrder})
                 .HasRequired(rp => rp.Route)
-                .WithMany(r => r.RoutePoints);
-            //.HasForeignKey(rp =>  rp.RouteId);
+                .WithMany(r => r.RoutePoints)
+                .HasForeignKey(rp => rp.RouteId);
 
 
             modelBuilder.Entity<TripPoint>()
                 .HasKey(vp => new {vp.TripId, vp.StationOrder})
                 .HasRequired(vp => vp.Trip)
-                .WithMany(v => v.TripPoints);
-            // .HasForeignKey(vp=>vp.TripId)
+                .WithMany(v => v.TripPoints)
+                .HasForeignKey(vp => vp.TripId);
 
 
             modelBuilder.Entity<Delay>()
@@ -49,8 +50,13 @@ namespace Nsu.Belov.TrainsDatabase.Database
 
             modelBuilder.Entity<Ticket>()
                 .HasRequired(x => x.Trip)
-                .WithMany()
+                .WithMany(x=>x.Tickets)
                 .HasForeignKey(x => x.TripId);
+
+            modelBuilder.Entity<Ticket>()
+                .HasRequired(x => x.Passenger)
+                .WithMany(x => x.Tickets)
+                .HasForeignKey(x => x.UserId);
 
             modelBuilder.Entity<RoutePoint>()
                 .HasRequired(x => x.Station)
@@ -67,6 +73,8 @@ namespace Nsu.Belov.TrainsDatabase.Database
                 .HasRequired(x => x.Route)
                 .WithMany()
                 .HasForeignKey(x => x.RouteId);
+
+          
 
             base.OnModelCreating(modelBuilder);
         }

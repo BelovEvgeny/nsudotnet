@@ -1,32 +1,67 @@
-﻿@using Reinforced.Lattice.CellTemplating
+﻿@using Nsu.Belov.TrainsDatabase.Database
+@using Reinforced.Lattice.CellTemplating
 @using Reinforced.Lattice.Configuration
+@using Reinforced.Lattice.Filters
+@using Reinforced.Lattice.Filters.Value
 @using Reinforced.Lattice.Mvc
+@using Reinforced.Lattice.Plugins.Ordering
 @using Reinforced.Lattice.Templates
 @model Nsu.Belov.TrainsDatabase.Web.Models.SelectTicketViewModel
 @{
     ViewBag.Title = "SelectTicket";
     var conf = Model.Configurator;
-    conf.AddUiColumn<string>("Время в пути").ClientExpression("getDuration({DepartureTime},{ArrivalTime})");
-    conf.Column(x => x.DepartureTime).Format("`parseDateTime({#});`");
-    conf.Column(x => x.ArrivalTime).Format("`parseDateTime({#});`");
+    conf.Column(x => x.DepartureStationOrder).DataOnly();
+    conf.Column(x => x.ArrivalStationOrder).DataOnly();
+    conf.AddUiColumn<string>("Время в пути").ClientExpression("getDurationinMinutes({DepartureTime},{ArrivalTime})")
+        .Format("`humanizeTimeSpan({#})`")
+        .OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.DepartureTime).Format("`parseDateTime({#});`").OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.ArrivalTime).Format("`parseDateTime({#});`").OrderableUi(ui => ui.UseClientOrdering());
+    conf.AddUiColumn<string>("Buy")
+        .TemplateFunction("formatBuyColumn");
+    // .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
+
+    conf.Column(x => x.TripId).OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.TrainId).OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.RouteId).OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.NumberOfStations).OrderableUi(ui => ui.UseClientOrdering()).Title("Stations");
 }
 
-<h2>BuyTicket</h2>
-<script>
-    var getDuration = function (from, to) {
-        var x = moment(from);
-        var y = moment(to);
-        return moment.duration(x.diff(y)).locale("ru").humanize();
+<style type="text/css">
+    [data-track="h-Buy"] {
+        width: 3%;
     }
-</script>
+   
+</style>
+
+<h2>BuyTicket</h2>
+
 <div id="table"></div>
 
 @section scripts {
-@*    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>*@
-   
-    @* Render our templates *@
-    @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
+    @*    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>*@
+<script type="text/javascript">
+        function formatBuyColumn(v) {
+            var s = "";
+            var template =
+                "<a href = \"/Tickets/Buy/?tripId={tripid}&depOrder={dep}&arrOrder={arr}&seatsType={clNum}\"><button  class = \"btn btn-default\" >  купить {cl} класс</button ></a>"
+                    .myFormat({
+                        tripid: v.DataObject.TripId,
+                        dep: v.DataObject.DepartureStationOrder,
+                        arr: v.DataObject.ArrivalStationOrder,
+                    });
 
-    @* Instantiate our table and put it to JS window.$$table variable *@
+
+            if (v.DataObject.FirstClassTickets > 0) {
+                s += template.myFormat({clNum:"@SeatsType.FirstClass", cl: "первый" });
+            }
+            if (v.DataObject.SecondClassTickets > 0) {
+                s += template.myFormat({ clNum: "@SeatsType.SecondClass", cl: "второй" });
+            }
+            return s;
+        }
+</script>
+
+    @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
     @Model.Configurator.InitializationScript("table", "window.$$table")
 }

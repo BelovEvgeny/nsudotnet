@@ -18,19 +18,20 @@
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
-    conf.AddUiColumn<string>("Actions")
-        .Razor(@<div>
-                   <button class="btn btn-xs btn-warning _beginEdit">
-                       <span class="glyphicon glyphicon-pencil"></span>
-                   </button>
-                   <button class="btn btn-xs btn-danger _remove">
-                       <span class="glyphicon glyphicon-remove"></span>
-                   </button>
-               </div>)
-        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"))
-        ;
-
-    conf.Command("Remove", x => x.ConfigureRemoval());
+    if (User.IsInRole("operator"))
+    {
+        conf.AddUiColumn<string>("Actions")
+            .Razor(@<div>
+                       <button class="btn btn-xs btn-warning _beginEdit">
+                           <span class="glyphicon glyphicon-pencil"></span>
+                       </button>
+                       <button class="btn btn-xs btn-danger _remove">
+                           <span class="glyphicon glyphicon-remove"></span>
+                       </button>
+                   </div>)
+            .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
+        conf.Command("Remove", x => x.ConfigureRemoval());
+    }
 }
 
 <h2>Станции маршрута</h2>

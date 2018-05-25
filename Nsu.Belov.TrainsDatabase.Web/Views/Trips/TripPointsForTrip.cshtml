@@ -17,26 +17,30 @@
     var conf = Model.Configurator;
     conf.Column(x => x.DepartureTime).Format("`parseDateTime({#})`");
     conf.Column(x => x.ArrivalTime).Format("`parseDateTime({#})`");
-    conf.EditingForm(f =>
-    {
-        f.EditPlainText(x => x.ArrivalTime);
-        f.EditPlainText(x => x.DepartureTime);
-        f.EditPlainText(x => x.DelayinMinutes);
-        f.RenderTo("#ltcModal");
-    }, c => c.Event("click").Selector("._beginEdit"));
-    conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
-    conf.AddUiColumn<string>("Actions")
-        .Razor(@<div>
-                   <button class="btn btn-xs btn-warning _beginEdit">
-                       <span class="glyphicon glyphicon-pencil"></span>
-                   </button>
-                   <button class="btn btn-xs btn-danger _remove">
-                       <span class="glyphicon glyphicon-remove"></span>
-                   </button>
-               </div>)
-        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
-    conf.Command("Remove", x => x.ConfigureRemoval());
 
+    if (User.IsInRole("operator"))
+    {
+        conf.EditingForm(f =>
+        {
+            f.EditPlainText(x => x.ArrivalTime);
+            f.EditPlainText(x => x.DepartureTime);
+            f.EditPlainText(x => x.DelayinMinutes);
+            f.RenderTo("#ltcModal");
+        }, c => c.Event("click").Selector("._beginEdit"));
+        conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
+
+        conf.AddUiColumn<string>("Actions")
+            .Razor(@<div>
+                       <button class="btn btn-xs btn-warning _beginEdit">
+                           <span class="glyphicon glyphicon-pencil"></span>
+                       </button>
+                       <button class="btn btn-xs btn-danger _remove">
+                           <span class="glyphicon glyphicon-remove"></span>
+                       </button>
+                   </div>)
+            .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
+        conf.Command("Remove", x => x.ConfigureRemoval());
+    }
     conf.Column(x => x.TripId).FilterValueUi(ui => ui.ClientFiltering());
     conf.Column(x => x.StationOrder).FilterValueUi(ui => ui.ClientFiltering());
     //    conf.Column(x => x.StationName).FilterValueUi(ui => ui.ClientFiltering());

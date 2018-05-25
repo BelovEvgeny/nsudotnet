@@ -19,7 +19,6 @@ using Reinforced.Lattice.Processing;
 
 namespace Nsu.Belov.TrainsDatabase.Web.Controllers
 {
-
     public class RoutesController : Controller
     {
         private readonly TrainsDataContext _context;

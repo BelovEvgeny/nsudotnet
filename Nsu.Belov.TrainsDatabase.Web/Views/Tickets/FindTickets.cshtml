@@ -1,0 +1,71 @@
+﻿@model Nsu.Belov.TrainsDatabase.Web.Models.SelectTicketViewModel
+
+@{
+    ViewBag.Title = "Select route";
+}
+
+<style>
+    .editor-datetime {
+        position: relative;
+    }
+    .field-validation-error {
+        color: #f00;
+    }
+    .validation-summary-errors {
+        color: #f00;
+        font-weight: bold;
+    }
+    .input-validation-error {
+        border: 2px solid #f00;
+        background-color: #fee;
+    }
+</style>
+
+
+<h2>Выберите маршрут и дату</h2>
+@using (Html.BeginForm("SelectTicket", "Tickets"))
+{
+    <div class="form-group">
+        <label for="@nameof(Model.DepartureStationId)">Станция отправления</label>
+        @Html.DropDownListFor(x => x.DepartureStationId, @Model.StationNames, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="@nameof(Model.ArrivalStationId)">Станция прибытия:</label>
+        @Html.DropDownListFor(x => x.ArrivalStationId, @Model.StationNames, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.ArrivalStationId)
+    </div>
+    <div class="form-group">
+        <label for="@nameof(Model.DateStart)">Дата отправления от:</label>
+        <div class="editor-datetime">
+            @Html.TextBoxFor(x => x.DateStart, new { @class = "form-control", placeholder = "MM.DD.YYYY", autocomplete = "off" })
+        </div>
+        @Html.ValidationMessageFor(model => model.DateStart)
+    </div>
+    <div class="form-group">
+        <label for="@nameof(Model.DateEnd)">до:</label>
+        <div class="editor-datetime">
+            @Html.TextBoxFor(x => x.DateEnd, new { @class = "form-control", placeholder = "MM.DD.YYYY", autocomplete = "off" })
+        </div>
+        @Html.ValidationMessageFor(model => model.DateEnd)
+    </div>
+    <input type="submit" class="btn btn-primary" />
+    <script type="text/javascript">
+        $(function() {
+            $('#@nameof(Model.DateStart)').datetimepicker({
+                format: "DD.MM.YYYY",
+                showTodayButton: true
+            });
+            $('#@nameof(Model.DateEnd)').datetimepicker({
+                format: "DD.MM.YYYY",
+                showTodayButton: true,
+                useCurrent: false
+            });
+            $('#@nameof(Model.DateStart)').on("dp.change", function (e) {
+                $('#@nameof(Model.DateEnd)').data("DateTimePicker").minDate(e.date);
+            });
+            $("#@nameof(Model.DateEnd)").on("dp.change", function (e) {
+                $('#@nameof(Model.DateStart)').data("DateTimePicker").maxDate(e.date);
+            });
+        });
+    </script>
+}

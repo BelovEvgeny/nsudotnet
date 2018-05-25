@@ -30,8 +30,7 @@ conf.AddUiColumn<string>("Actions")
         <span class="glyphicon glyphicon-remove"></span>
     </button>
 </div>)
-.SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"))
-;
+.SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
 conf.Command("Remove", x => x.ConfigureRemoval());
 }
 

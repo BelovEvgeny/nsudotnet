@@ -12,7 +12,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(TrainsDataContext context)
+        protected override void Seed(Nsu.Belov.TrainsDatabase.Database.TrainsDataContext context)
         {
             //  This method will be called after migrating to the latest version.
 

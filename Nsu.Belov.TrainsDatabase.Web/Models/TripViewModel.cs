@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using Nsu.Belov.TrainsDatabase.Database;
@@ -25,6 +26,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
         public DateTime? DepatrureDate { get; set; }
         public string ArrivalStationName { get; set; }
         public DateTime? ArrivalDate { get; set; }
+        public int LateToNearestStation { get; set; }
     }
 
     public static class TripEditTable
@@ -33,9 +35,10 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
         {
             conf.DefaultTable();
             conf.PrimaryKey(x => x.TripId);
+            DateTime now = DateTime.Now;
             conf.ProjectDataWith(trips =>
                 from trip in trips
-                from depatrure in ((
+                from depatrure in (
                     from tripPoint in trip.TripPoints
                     where tripPoint.StationOrder == trip.TripPoints.Min(tp => tp.StationOrder)
                     from routePoint in trip.Route.RoutePoints
@@ -44,13 +47,13 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
                     {
                         routePoint.StationOrder,
                         routePoint.Station.StationName,
-                        DepartureTime = (DateTime?) tripPoint.DepartureTime
+                        tripPoint.DepartureTime
                     }).DefaultIfEmpty(new
                 {
                     StationOrder = -1,
                     StationName = (string) null,
                     DepartureTime = (DateTime?) null
-                }).Take(1))
+                }).Take(1)
                 from arrival in (
                     from tripPoint in trip.TripPoints
                     where tripPoint.StationOrder == trip.TripPoints.Max(tp => tp.StationOrder)
@@ -60,12 +63,21 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
                     select new
                     {
                         routePoint.Station.StationName,
-                        ArrivalTime = (DateTime?) tripPoint.ArrivalTime
+                        tripPoint.ArrivalTime
                     }).DefaultIfEmpty(new
                 {
                     StationName = (string) null,
                     ArrivalTime = (DateTime?) null
                 }).Take(1)
+                from nearestDelay in (
+                        from tripPoint in trip.TripPoints
+                        where tripPoint.ArrivalTime.HasValue
+                              && (tripPoint.Delay != null)
+                              && DbFunctions.AddMinutes(tripPoint.ArrivalTime.Value, tripPoint.Delay.MinutesDelaySpan) >
+                              now
+                        orderby tripPoint.StationOrder
+                        select tripPoint.Delay != null ? tripPoint.Delay.MinutesDelaySpan :0)
+                    .DefaultIfEmpty(0).Take(1)
                 select new TripRow()
                 {
                     TripId = trip.TripId,
@@ -76,6 +88,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
                     DepatrureDate = depatrure.DepartureTime,
                     ArrivalStationName = arrival.StationName,
                     ArrivalDate = arrival.ArrivalTime,
+                    LateToNearestStation = nearestDelay
                 });
             return conf;
         }
@@ -105,27 +118,27 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
             conf.DefaultTable();
             conf.PrimaryKey(x => new {x.TripId, x.StationOrder});
             conf.ProjectDataWith(tripPoints =>
-               from tripPoint in tripPoints
-                    select new
-                    {
-                        tripPoint,
-                        touchingTickets = tripPoint.Trip.Tickets.Where(x =>
-                            x.StartStationOrder <= tripPoint.StationOrder &&
-                            x.EndStationOrder >= tripPoint.StationOrder)
-                    }
-                    into z
-                    select new TripPointForRow()
-                    {
-                        TripId = z.tripPoint.TripId,
-                        StationOrder = z.tripPoint.StationOrder,
-                        ArrivalTime = z.tripPoint.ArrivalTime,
-                        DepartureTime = z.tripPoint.DepartureTime,
-                        DelayinMinutes = z.tripPoint.Delay.MinutesDelaySpan,
-                        FirstClassSeatsLeft = z.tripPoint.Trip.Train.FirstClassCapacity - 
-                                              z.touchingTickets.Count(x => x.SeatsType == SeatsType.FirstClass),
-                        SecondClassSeatsLeft = z.tripPoint.Trip.Train.SecondClassCapacity - 
-                                               z.touchingTickets.Count(x => x.SeatsType == SeatsType.SecondClass),
-                    }
+                from tripPoint in tripPoints
+                select new
+                {
+                    tripPoint,
+                    touchingTickets = tripPoint.Trip.Tickets.Where(x =>
+                        x.StartStationOrder <= tripPoint.StationOrder &&
+                        x.EndStationOrder >= tripPoint.StationOrder)
+                }
+                into z
+                select new TripPointForRow()
+                {
+                    TripId = z.tripPoint.TripId,
+                    StationOrder = z.tripPoint.StationOrder,
+                    ArrivalTime = z.tripPoint.ArrivalTime,
+                    DepartureTime = z.tripPoint.DepartureTime,
+                    DelayinMinutes = z.tripPoint.Delay.MinutesDelaySpan,
+                    FirstClassSeatsLeft = z.tripPoint.Trip.Train.FirstClassCapacity -
+                                          z.touchingTickets.Count(x => x.SeatsType == SeatsType.FirstClass),
+                    SecondClassSeatsLeft = z.tripPoint.Trip.Train.SecondClassCapacity -
+                                           z.touchingTickets.Count(x => x.SeatsType == SeatsType.SecondClass),
+                }
             );
             return conf;
         }
