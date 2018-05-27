@@ -1,7 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
 
@@ -13,12 +14,12 @@
 
     <script src="~/Scripts/moment.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
 
     <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
-    <link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css"/>
 
     @* This is where we include Reinforced.Lattice Script *@
     <script type="text/javascript" src="~/Scripts/Reinforced.Lattice/reinforced.lattice.js"></script>
@@ -26,34 +27,52 @@
     @RenderSection("scripts", required: false)
 </head>
 <body>
-   
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Trains database", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-            </div>
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            @Html.ActionLink("Trains database", "Index", "Home", new {area = ""}, new {@class = "navbar-brand"})
         </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                @if (User.IsInRole("admin"))
+                {
+                    <li>@Html.ActionLink("Персонал", "Index", "Staff")</li>
+                    <li>@Html.ActionLink("CRUD", "Index", "Tables")</li>
+                }
+
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li><a>Вы зашли как @User.Identity.GetUserName()!</a></li>
+                    <li><a href="@Url.Action("Logout","Auth")">Log out</a></li>
+                }
+                else
+                {
+                    <li>
+                        <a href="@Url.Action("Login", "Auth")">Log in</a>
+                    </li>
+                }
+            </ul>
+        </div>
+
     </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
-    <div class="modal fade" tabindex="-1" id="ltcModal" role="dialog">
-    </div>
+</div>
+<div class="container body-content">
+    @RenderBody()
+    <hr/>
+    <footer>
+        <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+    </footer>
+</div>
+<div class="modal fade" tabindex="-1" id="ltcModal" role="dialog">
+</div>
 </body>
 </html>

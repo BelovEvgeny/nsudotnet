@@ -1,0 +1,105 @@
+﻿@using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
+@using Nsu.Belov.TrainsDatabase.Web.Models
+@using Reinforced.Lattice.Commands
+@using Reinforced.Lattice.Configuration
+@using Reinforced.Lattice.Editing
+@using Reinforced.Lattice.Editing.Editors.PlainText
+@using Reinforced.Lattice.Editing.Editors.SelectList
+@using Reinforced.Lattice.Editing.Form
+@using Reinforced.Lattice.Mvc
+@using Reinforced.Lattice.Plugins.Toolbar
+@using Reinforced.Lattice.Templates
+@using Reinforced.Lattice.Templates.BuiltIn
+@using Reinforced.Lattice.Templates.Expressions
+@model Nsu.Belov.TrainsDatabase.Web.Models.StaffViewModel
+
+@{
+    ViewBag.Title = "Персонал";
+    var conf = Model.Configurator;
+    conf.EditingForm(f =>
+    {
+        f.EditPlainText(x => x.Name);
+        f.EditPlainText(x => x.Position);
+        f.EditPlainText(x => x.TrainId);
+        f.EditPlainText(x => x.Age);
+        f.RenderTo("#ltcModal");
+    }, c => c.Event("click").Selector("._beginEdit"));
+    conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("<a href=/Staff/AddNewEmployee>Add New</a>"); });
+
+
+    conf.AddUiColumn<string>("Roles")
+        .Razor(@<div>
+                   <button class="btn btn-xs btn-success _addRole">
+                       <span class="glyphicon glyphicon-plus"></span>
+                   </button>
+                   <button class="btn btn-xs btn-danger _removeRole">
+                       <span class="glyphicon glyphicon-minus"></span>
+                   </button>
+               </div>)
+        .SubscribeCellEvent(x => x.Command("click", "AddRole").Selector("._addRole"));
+
+    conf.Column<string>("Roles").
+        SubscribeCellEvent(x => x.Command("click", "RemoveRole").Selector("._removeRole"));
+    conf.Command("AddRole", x => x.Window<TargetRoleCommandViewModel>("actionWithRole", "#ltcModal", w =>
+    {
+        w.AutoForm(a => { a.EditSelectList(d => d.TargetRole).FakeColumn(d => d.Title("Role")).Items(Model.Roles); });
+    }));
+    conf.Command("RemoveRole", x => x.Window<TargetRoleCommandViewModel>("actionWithRole", "#ltcModal", w =>
+    {
+        w.AutoForm(a => { a.EditSelectList(d => d.TargetRole).FakeColumn(d => d.Title("Role")).Items(Model.Roles); });
+    }));
+    conf.AddUiColumn<string>("Actions")
+        .Razor(@<div>
+                   <button class="btn btn-xs btn-warning _beginEdit">
+                       <span class="glyphicon glyphicon-pencil"></span>
+                   </button>
+                   <button class="btn btn-xs btn-danger _remove">
+                       <span class="glyphicon glyphicon-remove"></span>
+                   </button>
+               </div>)
+        .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
+    conf.Command("Remove", x => x.ConfigureRemoval());
+}
+
+
+<h2>Персонал</h2>
+
+
+<div id="table"></div>
+
+@section scripts {
+    @{ Html.RenderPartial("DeleteTemplate"); }
+
+    @using (var t = this.LatticeAdditionalTemplates())
+    {
+        using (var tpl = t.Plugin.Confirmation<Employee, EmployeeRow>("actionWithRole"))
+        {
+            <div class="modal-dialog" @t.Callback("ltcShowModal") @t.DestroyCallback("ltcHideModal")>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" @tpl.BindDismiss("click")>
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">
+                            Выберете роль
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <fieldset class="form form-horizontal">
+                            @tpl.Editors()
+                        </fieldset>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" @tpl.BindDismiss("click")>Отмена</button>
+                        <button type="button" class="btn btn-primary" @tpl.BindConfirm("click")>Ок</button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    @* Render our templates *@
+    @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
+
+    @* Instantiate our table and put it to JS window.$$table variable *@
+    @Model.Configurator.InitializationScript("table", "window.$$table")
+}

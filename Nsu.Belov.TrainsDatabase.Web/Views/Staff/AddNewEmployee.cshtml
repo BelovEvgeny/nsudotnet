@@ -1,0 +1,70 @@
+﻿@using Nsu.Belov.TrainsDatabase.Web.Models
+@model  NewEmployeeViewModel
+@{
+    ViewBag.Title = "AddNewEmployee";
+}
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-2">
+        <h2>Создать нового работника</h2>
+
+        @using (Html.BeginForm("AddNewEmployee", "Staff", FormMethod.Post, new {@class = "form-horizontal"}))
+        {
+            @Html.ValidationSummary()
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Логин</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Login, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Пароль</label>
+                <div class="col-sm-10">
+                    @Html.PasswordFor(x => x.Password, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Имя</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Name, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Возраст</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Age, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Должность</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Position, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Телефон</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(x => x.Phone, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">На каком поезде работает(не обязательно)</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(x => x.TrainId, @Model.TrainsIds, new {@class = "form-control"})
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-6">
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>

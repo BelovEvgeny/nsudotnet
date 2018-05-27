@@ -8,7 +8,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.CrewMembers",
+                "dbo.Employees",
                 c => new
                     {
                         CrewMemberId = c.Int(nullable: false, identity: true),
@@ -210,7 +210,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
             DropForeignKey("dbo.Trips", "RouteId", "dbo.Routes");
             DropForeignKey("dbo.RoutePoints", "StationId", "dbo.Stations");
             DropForeignKey("dbo.RoutePoints", "RouteId", "dbo.Routes");
-            DropForeignKey("dbo.CrewMembers", "Train_TrainId", "dbo.Trains");
+            DropForeignKey("dbo.Employees", "Train_TrainId", "dbo.Trains");
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
@@ -226,7 +226,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
             DropIndex("dbo.RoutePoints", new[] { "RouteId" });
             DropIndex("dbo.Trips", new[] { "TrainId" });
             DropIndex("dbo.Trips", new[] { "RouteId" });
-            DropIndex("dbo.CrewMembers", new[] { "Train_TrainId" });
+            DropIndex("dbo.Employees", new[] { "Train_TrainId" });
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
@@ -240,7 +240,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.Migrations
             DropTable("dbo.Routes");
             DropTable("dbo.Trips");
             DropTable("dbo.Trains");
-            DropTable("dbo.CrewMembers");
+            DropTable("dbo.Employees");
         }
     }
 }

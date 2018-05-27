@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using Nsu.Belov.TrainsDatabase.Database.Auth;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 using Nsu.Belov.TrainsDatabase.Web.Auth;
 using Nsu.Belov.TrainsDatabase.Web.Models;
@@ -87,6 +88,12 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             ModelState.AddModelError("auth", "Неверный логин или пароль.");
             return View("Login", lvm);
            
+        }
+
+        public ActionResult Logout()
+        {
+            _authentication.SignOut();
+            return RedirectToAction("Index","Home");
         }
     }
 

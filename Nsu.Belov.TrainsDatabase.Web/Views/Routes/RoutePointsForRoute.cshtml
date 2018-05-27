@@ -12,16 +12,17 @@
 @{
     ViewBag.Title = "RoutePoints";
     var conf = Model.Configurator;
-    conf.EditingForm(f =>
-    {
-        f.EditSelectList(x => x.StationName).Items(Model.SationsNames);
-        f.RenderTo("#ltcModal");
-    }, c => c.Event("click").Selector("._beginEdit"));
-    conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
+
     if (User.IsInRole("operator"))
     {
+        conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
+        conf.EditingForm(f =>
+        {
+            f.EditSelectList(x => x.StationName).Items(Model.SationsNames);
+            f.RenderTo("#ltcModal");
+        }, c => c.Event("click").Selector("._beginEdit"));
         conf.AddUiColumn<string>("Actions")
-            .Razor(@<div>
+    .Razor(@<div>
                        <button class="btn btn-xs btn-warning _beginEdit">
                            <span class="glyphicon glyphicon-pencil"></span>
                        </button>

@@ -68,18 +68,24 @@ namespace Nsu.Belov.TrainsDatabase.Database
                 .WithMany(x => x.Trips)
                 .HasForeignKey(x => x.TrainId);
 
-
             modelBuilder.Entity<Trip>()
                 .HasRequired(x => x.Route)
                 .WithMany()
                 .HasForeignKey(x => x.RouteId);
 
-          
+            modelBuilder.Entity<Employee>()
+                .HasOptional(x => x.Train)
+                .WithMany(x=>x.Employees)
+                .HasForeignKey(x => x.TrainId);
+
+            modelBuilder.Entity<Employee>()
+                .HasKey(employee => employee.UserId)
+                .HasRequired(x => x.ApplicationUser)
+                .WithOptional();
 
             base.OnModelCreating(modelBuilder);
         }
-
-        public DbSet<CrewMember> CrewMembers { get; set; }
+        
         public DbSet<Delay> Delays { get; set; }
         public DbSet<Route> Routes { get; set; }
         public DbSet<RoutePoint> RoutePoints { get; set; }
@@ -88,5 +94,6 @@ namespace Nsu.Belov.TrainsDatabase.Database
         public DbSet<Trip> Trips { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TripPoint> TripPoints { get; set; }
+        public DbSet<Employee> Employees { get; set; }
     }
 }

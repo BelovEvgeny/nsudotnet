@@ -15,7 +15,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels
         {
             conf.DefaultTable();
             conf.PrimaryKey(x => x.TrainId);
-            conf.NotAColumn(train => train.CrewMembers);
+            conf.NotAColumn(train => train.Employees);
             conf.NotAColumn(train => train.Trips);
             return conf;
         }

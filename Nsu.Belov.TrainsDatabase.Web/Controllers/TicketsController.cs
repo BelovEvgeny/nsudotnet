@@ -244,6 +244,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
 
                         // чет не понял как проверить результат транзакции
                         ViewBag.Success = true;
+                        ViewBag.TicketId = ticket.TicketId;
                     }
                     else
                     {

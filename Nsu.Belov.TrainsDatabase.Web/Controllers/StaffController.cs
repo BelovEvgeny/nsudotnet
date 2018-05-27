@@ -5,8 +5,12 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.Ajax.Utilities;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 using Nsu.Belov.TrainsDatabase.Database;
+using Nsu.Belov.TrainsDatabase.Database.Auth;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
+using Nsu.Belov.TrainsDatabase.Web.Auth;
 using Nsu.Belov.TrainsDatabase.Web.Models;
 using Nsu.Belov.TrainsDatabase.Web.Models.CrudViewModels;
 using Reinforced.Lattice;
@@ -19,174 +23,189 @@ using Reinforced.Lattice.Processing;
 
 namespace Nsu.Belov.TrainsDatabase.Web.Controllers
 {
-    public class RoutesController : Controller
+    public class StaffController : Controller
     {
         private readonly TrainsDataContext _context;
+        private readonly TrainsUserManager _userManager;
 
-        public RoutesController(TrainsDataContext context)
+        public StaffController(TrainsDataContext context, TrainsUserManager userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        public ActionResult Routes()
+        [Authorize(Roles = "admin")]
+        public ActionResult Index()
         {
-            var vm = new Models.RouteViewModel()
+            var vm = new StaffViewModel()
             {
-                Configurator = new Configurator<Route, RouteRow>()
-                    .Configure()
-                    .Url(Url.Action(nameof(HandleRoutes)))
-            };
-            return View(vm);
-        }
-
-        public ActionResult HandleRoutes()
-        {
-            var conf = new Configurator<Route, RouteRow>().Configure();
-            var handler = conf.CreateMvcHandler(ControllerContext);
-            handler.AddEditHandler(EditRoute);
-            handler.AddCommandHandler("Remove", RemoveRoute);
-            return handler.Handle(_context.Routes.OrderBy(x => x.RouteId));
-        }
-
-        public TableAdjustment EditRoute(LatticeData<Route, RouteRow> latticeData, RouteRow routeRow)
-        {
-            Route route;
-            if (routeRow.RouteId == 0)
-            {
-                route = new Route();
-                _context.Routes.Add(route);
-            }
-            else
-            {
-                route = _context.Routes
-                    .FirstOrDefault(x => x.RouteId == routeRow.RouteId);
-            }
-
-            route.RouteName = routeRow.RouteName;
-            _context.SaveChanges();
-            routeRow.RouteId = route.RouteId;
-            return latticeData.Adjust(x => x
-                .Update(routeRow)
-                .Message(LatticeMessage.User("success", "Editing", "Route saved"))
-            );
-        }
-
-        public TableAdjustment RemoveRoute(LatticeData<Route, RouteRow> latticeData)
-        {
-            var subj = latticeData.CommandSubject();
-            var route = _context.Routes.FirstOrDefault(x => x.RouteId == subj.RouteId);
-            _context.Routes.Remove(route);
-            _context.SaveChanges();
-            return latticeData.Adjust(x => x
-                .Remove(subj)
-                .Message(LatticeMessage.User("success", "Remove", "Route removed"))
-            );
-        }
-
-        public ActionResult RoutePointsForRoute(int routeId)
-        {
-            var vm = new Models.RoutePointViewModel()
-            {
-                SationsNames = (from station in _context.Stations
-                    orderby station.StationId
-                    select new SelectListItem()
-                    {
-                        Text = station.StationName,
-                        Value = station.StationName
-                    }).ToArray(),
-                Configurator = new Configurator<RoutePoint, RoutePointRow>()
-                    .Configure()
-                    .Url(Url.Action(nameof(HandleRoutePoints), new {routeId}))
-            };
-            return View(vm);
-        }
-
-        public ActionResult HandleRoutePoints(int routeId)
-        {
-            var conf = new Configurator<RoutePoint, RoutePointRow>().Configure();
-            var handler = conf.CreateMvcHandler(ControllerContext);
-            handler.AddEditHandler((latticeData, rpRow) => EditRoutePoint(latticeData, rpRow, routeId));
-            handler.AddCommandHandler("Remove", RemoveRoutePoint);
-            var routePoints = _context.RoutePoints
-                .Where(x => x.RouteId == routeId)
-                .OrderBy(x => x.StationOrder);
-            return handler.Handle(routePoints);
-        }
-
-
-        public TableAdjustment EditRoutePoint(LatticeData<RoutePoint, RoutePointRow> latticeData,
-            RoutePointRow routePointRow, int routeId)
-        {
-            RoutePoint routePoint;
-            if (routePointRow.RouteId == 0)
-            {
-                routePoint = new RoutePoint
+                Roles = _context.Roles.Select(role => new SelectListItem()
                 {
-                    RouteId = routeId,
-                    StationOrder = _context.RoutePoints.Where(x => x.RouteId == routeId)
-                                       .Select(x => x.StationOrder)
-                                       .DefaultIfEmpty(0)
-                                       .Max() + 1
-                };
-                _context.RoutePoints.Add(routePoint);
-            }
-            else
+                    Value = role.Name,
+                    Text = role.Name
+                }).ToArray(),
+                Configurator = new Configurator<Employee, EmployeeRow>()
+                    .Configure()
+                    .Url(Url.Action(nameof(HandleEmployee)))
+            };
+            return View(vm);
+        }
+
+        public ActionResult HandleEmployee()
+        {
+            var conf = new Configurator<Employee, EmployeeRow>().Configure();
+            var handler = conf.CreateMvcHandler(ControllerContext);
+            handler.AddEditHandler(EditEmployee);
+            handler.AddCommandHandler("Remove", RemoveEmployee);
+            handler.AddCommandHandler("AddRole", AddRole);
+            handler.AddCommandHandler("RemoveRole", RemoveRole);
+            return handler.Handle(_context.Employees);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "admin")]
+        public ActionResult AddNewEmployee()
+        {
+            NewEmployeeViewModel model = new NewEmployeeViewModel()
             {
-                routePoint = _context.RoutePoints
-                    .FirstOrDefault(x => x.RouteId == routePointRow.RouteId
-                                         && x.StationOrder == routePointRow.StationOrder);
+                TrainsIds = GetTrainsIds()
+            };
+            return View(model);
+        }
+
+        private SelectListItem[] GetTrainsIds()
+        {
+            var trainsIds = _context.Trains.Select(x => new SelectListItem()
+            {
+                Value = x.TrainId.ToString(),
+                Text = x.TrainId.ToString()
+            }).ToArray();
+            return new[]
+            {
+                new SelectListItem()
+                {
+                    Value = (-1).ToString(),
+                    Text = "Не выбранно",
+                    Selected = true
+                }
+            }.Concat(trainsIds).ToArray();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        public ActionResult AddNewEmployee(NewEmployeeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.TrainsIds = GetTrainsIds();
+                return View(model);
             }
 
-            Station station = _context.Stations.FirstOrDefault(x => x.StationName == routePointRow.StationName);
+            var user = new ApplicationUser()
+            {
+                UserName = model.Login
+            };
 
-            if (station == null)
+            var r = _userManager.Create(user, model.Password);
+            if (!r.Succeeded)
+            {
+                int t = 0;
+                foreach (var e in r.Errors)
+                {
+                    ModelState.AddModelError("auth" + t++, e);
+                }
+
+                model.TrainsIds = GetTrainsIds();
+                return View(model);
+            }
+
+            Employee employee = new Employee()
+            {
+                Name = model.Name,
+                Age = model.Age,
+                Phone = model.Phone,
+                TrainId = (model.TrainId != -1) ? model.TrainId : null,
+                UserId = user.Id,
+                Position = model.Position
+            };
+            try
+            {
+                _context.Employees.Add(employee);
+                _context.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("employee", e);
+                model.TrainsIds = GetTrainsIds();
+                return View(model);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        public TableAdjustment EditEmployee(LatticeData<Employee, EmployeeRow> latticeData, EmployeeRow employeeRow)
+        {
+            if (string.IsNullOrEmpty(employeeRow.UserId))
             {
                 return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Editing",
-                        $"There is no station with name {routePointRow.StationName}"))
+                    .Message(LatticeMessage.User("failure", "Editing", "Can not create create new employee from here"))
                 );
             }
 
-
-            if (_context.RoutePoints.Any(x => x.RouteId == routeId
-                                              && x.StationOrder != routePoint.StationOrder
-                                              && x.Station.StationId == station.StationId))
+            Employee employee = _context.Employees
+                .FirstOrDefault(x => x.UserId == employeeRow.UserId);
+            if (employee == null)
             {
                 return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Editing",
-                        $"The route already has station {station.StationName}"))
+                    .Message(LatticeMessage.User("failure", "Editing", "Can not find employee"))
                 );
             }
 
-            routePoint.Station = station;
-
-
+            employee.Name = employeeRow.Name;
+            employee.TrainId = employeeRow.TrainId;
+            employee.Age = employeeRow.Age;
+            employee.Position = employeeRow.Position;
             _context.SaveChanges();
             return latticeData.Adjust(x => x
-                .Update(routePoint)
-                .Message(LatticeMessage.User("success", "Editing", "Route saved"))
+                .Update(employeeRow)
+                .Message(LatticeMessage.User("success", "Editing", "Employee saved"))
             );
         }
 
-        public TableAdjustment RemoveRoutePoint(LatticeData<RoutePoint, RoutePointRow> latticeData)
+        public TableAdjustment RemoveEmployee(LatticeData<Employee, EmployeeRow> latticeData)
         {
             var subj = latticeData.CommandSubject();
-            if (_context.RoutePoints.Any(x => x.RouteId == subj.RouteId && x.StationOrder == subj.StationOrder + 1))
-            {
-                return latticeData.Adjust(x => x
-                    .Message(LatticeMessage.User("failure", "Remove", "Can not delete point from the middle of route"))
-                );
-            }
-
-            var routePoint =
-                _context.RoutePoints.FirstOrDefault(x => x.RouteId == subj.RouteId
-                                                         && x.StationOrder == subj.StationOrder);
-            _context.RoutePoints.Remove(routePoint);
-            _context.SaveChanges();
+            var employee = _context.Employees.FirstOrDefault(x => x.UserId == subj.UserId);
+            _userManager.Delete(employee.ApplicationUser);
+            //_context.Employees.Remove(employee); удаляеться из за зависимости от usera
+            // _context.SaveChanges();
             return latticeData.Adjust(x => x
                 .Remove(subj)
-                .Message(LatticeMessage.User("success", "Remove", "RoutePoint removed"))
+                .Message(LatticeMessage.User("success", "Remove", "Employee removed"))
             );
         }
+        public TableAdjustment AddRole(LatticeData<Employee, EmployeeRow> latticeData)
+        {
+            var comandModel = latticeData.CommandConfirmation<TargetRoleCommandViewModel>();
+            var subj = latticeData.CommandSubject();
+            var employee = _context.Employees.FirstOrDefault(x => x.UserId == subj.UserId);
+            _userManager.AddToRole(employee.UserId,comandModel.TargetRole);
+            return latticeData.Adjust(x => x
+                .Message(LatticeMessage.User("success", "Remove", "Role was added"))
+            );
+        }
+
+        public TableAdjustment RemoveRole(LatticeData<Employee, EmployeeRow> latticeData)
+        {
+            var comandModel = latticeData.CommandConfirmation<TargetRoleCommandViewModel>();
+            var subj = latticeData.CommandSubject();
+            var employee = _context.Employees.FirstOrDefault(x => x.UserId == subj.UserId);
+            _userManager.RemoveFromRole(employee.UserId, comandModel.TargetRole);
+            return latticeData.Adjust(x => x
+                .Message(LatticeMessage.User("success", "Remove", "Role was removed"))
+            );
+        }
+
+
     }
 }

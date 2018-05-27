@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Nsu.Belov.TrainsDatabase.Database;
+using Nsu.Belov.TrainsDatabase.Database.Auth;
 using Nsu.Belov.TrainsDatabase.Database.DatabaseEntities;
 using Nsu.Belov.TrainsDatabase.Web.Auth;
 

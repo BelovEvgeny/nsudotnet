@@ -9,7 +9,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
     public class TablesController : Controller
     {
         // GET: Tables
-        [Authorize(Roles = "operator")]
+        [Authorize(Roles = "admin")]
         public ActionResult Index()
         {
             return View();

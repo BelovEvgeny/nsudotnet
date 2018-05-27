@@ -11,27 +11,29 @@
 @{
     ViewBag.Title = "Routes";
     var conf = Model.Configurator;
-@*    conf.Column(x => x.RouteId)*@
-@*        .Razor(@<a href="@Url.Action("RoutePointsForRoute", "Crud", new {routeId = "{RouteId}"})">{RouteId}</a>);*@
-@*conf.Column(x => x.RouteName)*@
-@*.Razor(@<a href="@Url.Action("RoutePointsForRoute", "Crud", new {routeId = "{RouteId}"})">{RouteName}</a>);*@
-conf.EditingForm(f =>
-{
-f.EditPlainText(x => x.RouteName);
-f.RenderTo("#ltcModal");
-}, c => c.Event("click").Selector("._beginEdit"));
-conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
-conf.AddUiColumn<string>("Actions")
-.Razor(@<div>
-    <button class="btn btn-xs btn-warning _beginEdit">
-        <span class="glyphicon glyphicon-pencil"></span>
-    </button>
-    <button class="btn btn-xs btn-danger _remove">
-        <span class="glyphicon glyphicon-remove"></span>
-    </button>
-</div>)
-.SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
-conf.Command("Remove", x => x.ConfigureRemoval());
+    conf.Column(x => x.RouteId)
+        .Razor(@<a href="@Url.Action("RoutePointsForRoute", "Routes", new {routeId = "{RouteId}"})">{RouteId}</a>);
+    if (User.IsInRole("admin"))
+    {
+        conf.EditingForm(f =>
+        {
+            f.EditPlainText(x => x.RouteName);
+            f.RenderTo("#ltcModal");
+        }, c => c.Event("click").Selector("._beginEdit"));
+
+        conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
+        conf.AddUiColumn<string>("Actions")
+            .Razor(@<div>
+                       <button class="btn btn-xs btn-warning _beginEdit">
+                           <span class="glyphicon glyphicon-pencil"></span>
+                       </button>
+                       <button class="btn btn-xs btn-danger _remove">
+                           <span class="glyphicon glyphicon-remove"></span>
+                       </button>
+                   </div>)
+            .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
+        conf.Command("Remove", x => x.ConfigureRemoval());
+    }
 }
 
 <h2>Маршруты</h2>

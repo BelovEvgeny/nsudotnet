@@ -13,7 +13,7 @@ namespace Nsu.Belov.TrainsDatabase.Database.DatabaseEntities
         {
            
         }
-
+      
         public virtual ICollection<Ticket> Tickets { get; set; }
 
         //        public string FirstName { get; set; }
