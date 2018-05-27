@@ -39,7 +39,8 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
         {
             var vm = new StaffViewModel()
             {
-                Roles = _context.Roles.Select(role => new SelectListItem()
+                TrainsIds = GetTrainsIds(),
+            Roles = _context.Roles.Select(role => new SelectListItem()
                 {
                     Value = role.Name,
                     Text = role.Name
@@ -61,6 +62,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             handler.AddCommandHandler("RemoveRole", RemoveRole);
             return handler.Handle(_context.Employees);
         }
+
 
         [HttpGet]
         [Authorize(Roles = "admin")]
@@ -84,7 +86,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             {
                 new SelectListItem()
                 {
-                    Value = (-1).ToString(),
+                    Value = null,
                     Text = "Не выбранно",
                     Selected = true
                 }
@@ -124,7 +126,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 Name = model.Name,
                 Age = model.Age,
                 Phone = model.Phone,
-                TrainId = (model.TrainId != -1) ? model.TrainId : null,
+                TrainId =model.TrainId,
                 UserId = user.Id,
                 Position = model.Position
             };
@@ -184,12 +186,13 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 .Message(LatticeMessage.User("success", "Remove", "Employee removed"))
             );
         }
+
         public TableAdjustment AddRole(LatticeData<Employee, EmployeeRow> latticeData)
         {
             var comandModel = latticeData.CommandConfirmation<TargetRoleCommandViewModel>();
             var subj = latticeData.CommandSubject();
             var employee = _context.Employees.FirstOrDefault(x => x.UserId == subj.UserId);
-            _userManager.AddToRole(employee.UserId,comandModel.TargetRole);
+            _userManager.AddToRole(employee.UserId, comandModel.TargetRole);
             return latticeData.Adjust(x => x
                 .Message(LatticeMessage.User("success", "Remove", "Role was added"))
             );
@@ -206,6 +209,55 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             );
         }
 
+        [Authorize(Roles = "operator")]
+        public ActionResult TrainsCrew(int trainId)
+        {
+            var vm = new TrainsStaffViewModel()
+            {
+                TrainId = trainId,
+                TrainsIds = GetTrainsIds(),
+                Configurator = new Configurator<Employee, EmployeeRow>()
+                    .ConfigureTrainsStaff()
+                    .Url(Url.Action(nameof(HandleTrainsStaff), new {trainId}))
+            };
+            return View(vm);
+        }
 
+        public ActionResult HandleTrainsStaff(int trainId)
+        {
+            var conf = new Configurator<Employee, EmployeeRow>().ConfigureTrainsStaff();
+            var handler = conf.CreateMvcHandler(ControllerContext);
+            handler.AddEditHandler(EditTrainsStaffMember);
+            return handler.Handle(_context.Employees.Where(employee =>
+                employee.TrainId.HasValue && employee.TrainId == trainId));
+        }
+
+        public TableAdjustment EditTrainsStaffMember(LatticeData<Employee, EmployeeRow> latticeData,
+            EmployeeRow employeeRow)
+        {
+            if (string.IsNullOrEmpty(employeeRow.UserId))
+            {
+                return latticeData.Adjust(x => x
+                    .Message(LatticeMessage.User("failure", "Editing", "Can not create create new employee from here"))
+                );
+            }
+
+            Employee employee = _context.Employees
+                .FirstOrDefault(x => x.UserId == employeeRow.UserId);
+            if (employee == null)
+            {
+                return latticeData.Adjust(x => x
+                    .Message(LatticeMessage.User("failure", "Editing", "Can not find employee"))
+                );
+            }
+            
+
+            employee.TrainId = employeeRow.TrainId ;
+            _context.SaveChanges();
+            return latticeData.Adjust(x => x
+                .Update(employeeRow)
+                .Message(LatticeMessage.User("success", "Editing", "Employee saved"))
+            );
+        }
     }
 }

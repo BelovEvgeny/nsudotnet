@@ -332,6 +332,7 @@
     <Content Include="Views\Auth\Login.cshtml" />
     <Content Include="Views\Staff\Index.cshtml" />
     <Content Include="Views\Staff\AddNewEmployee.cshtml" />
+    <Content Include="Views\Staff\TrainsCrew.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

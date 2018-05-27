@@ -20,7 +20,7 @@
     {
         f.EditPlainText(x => x.Name);
         f.EditPlainText(x => x.Position);
-        f.EditPlainText(x => x.TrainId);
+        f.EditSelectList(x => x.TrainId).Items(Model.TrainsIds);
         f.EditPlainText(x => x.Age);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));

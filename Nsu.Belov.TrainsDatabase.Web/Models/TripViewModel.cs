@@ -10,10 +10,16 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
 {
     public class TripEditViewModel
     {
-        public SelectListItem[] RouteIds;
+        public int? TrainId { get; set; }
+        public SelectListItem[] RouteIds { get; set; }
 
-        public SelectListItem[] TrainIds;
+        public SelectListItem[] TrainIds { get; set; }
         public Configurator<Trip, TripRow> Configurator { get; set; }
+    }
+
+    public class GenerateNewCommandViewModel
+    {
+        public int TrainId { get; set; }
     }
 
     public class TripRow
@@ -76,7 +82,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
                               && DbFunctions.AddMinutes(tripPoint.ArrivalTime.Value, tripPoint.Delay.MinutesDelaySpan) >
                               now
                         orderby tripPoint.StationOrder
-                        select tripPoint.Delay != null ? tripPoint.Delay.MinutesDelaySpan :0)
+                        select tripPoint.Delay != null ? tripPoint.Delay.MinutesDelaySpan : 0)
                     .DefaultIfEmpty(0).Take(1)
                 select new TripRow()
                 {

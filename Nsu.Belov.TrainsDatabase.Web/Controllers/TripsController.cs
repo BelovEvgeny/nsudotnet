@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web;
@@ -28,10 +29,11 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             _context = context;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(int? trainId = null)
         {
             var vm = new TripEditViewModel()
             {
+                TrainId = trainId,
                 RouteIds = (from route in _context.Routes
                     orderby route.RouteId
                     select new SelectListItem()
@@ -48,18 +50,23 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                     }).ToArray(),
                 Configurator = new Configurator<Trip, TripRow>()
                     .Configure()
-                    .Url(Url.Action(nameof(HandleTrips)))
+                    .Url(Url.Action(nameof(HandleTrips), new {trainid = trainId}))
             };
-            return View(vm);
+            return View("Index",vm);
         }
 
-        public ActionResult HandleTrips()
+        public ActionResult HandleTrips(int? trainId)
         {
             var conf = new Configurator<Trip, TripRow>().Configure();
             var handler = conf.CreateMvcHandler(ControllerContext);
             handler.AddEditHandler(EditTrip);
             handler.AddCommandHandler("Remove", RemoveTrip);
-            return handler.Handle(_context.Trips);
+            if (!trainId.HasValue)
+            {
+                return handler.Handle(_context.Trips);
+            }
+
+            return handler.Handle(_context.Trips.Where(x => x.TrainId == trainId.Value));
         }
 
         public TableAdjustment EditTrip(LatticeData<Trip, TripRow> latticeData, TripRow tripRow)
@@ -134,7 +141,6 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             handler.AddCommandHandler("Remove", RemoveTripPoint);
             return handler.Handle(_context.TripPoints.Where(point => point.TripId == tripId));
         }
-
 
         public TableAdjustment EditTripPoint(LatticeData<TripPoint, TripPointForRow> latticeData,
             TripPointForRow tripPointRow, int tripId)
@@ -257,6 +263,62 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 .Remove(subj)
                 .Message(LatticeMessage.User("success", "Remove", "RoutePoint removed"))
             );
+        }
+
+        [Authorize(Roles = "operator")]
+        public ActionResult GenerateNew(int trainId)
+        {
+            var lastTrainTrip = (from train in _context.Trains
+                    where train.TrainId == trainId
+                    from lastTrip in (
+                        from trip in train.Trips
+                        orderby trip.TripId descending
+                        select trip).Take(1)
+                    select lastTrip).Include(trip => trip.TripPoints)
+                .FirstOrDefault();
+            if (lastTrainTrip == null)
+            {
+                ModelState.AddModelError("wrongtrain", "У этого поезда еще небыло поездок");
+                return Index(trainId);
+            }
+
+            Trip newTrip = new Trip()
+            {
+                RouteId = lastTrainTrip.RouteId,
+                TripId = lastTrainTrip.TripId,
+                TrainId = trainId
+            };
+            _context.Trips.Add(newTrip);
+            if (lastTrainTrip.TripPoints.Count != 0)
+            {
+                var lastTripStartDate = lastTrainTrip.TripPoints
+                    .OrderBy(point => point.StationOrder)
+                    .FirstOrDefault()
+                    .DepartureTime.Value.Date;
+                var newTripStartDate = lastTrainTrip.TripPoints
+                                           .Where(point => point.ArrivalTime.HasValue)
+                                           .OrderByDescending(point => point.StationOrder)
+                                           .FirstOrDefault().ArrivalTime.Value.Date + TimeSpan.FromDays(1);
+
+
+                newTrip.TripPoints = new List<TripPoint>();
+                foreach (var tripPoint in lastTrainTrip.TripPoints)
+                {
+                    newTrip.TripPoints.Add(new TripPoint()
+                    {
+                        StationOrder = tripPoint.StationOrder,
+                        ArrivalTime = (tripPoint.ArrivalTime.HasValue)
+                            ? newTripStartDate + (tripPoint.ArrivalTime.Value - lastTripStartDate)
+                            : (DateTime?) null,
+                        DepartureTime = (tripPoint.DepartureTime.HasValue)
+                            ? newTripStartDate + (tripPoint.DepartureTime.Value - lastTripStartDate)
+                            : (DateTime?) null
+                    });
+                }
+            }
+
+            _context.SaveChanges();
+            return Index(trainId);
         }
     }
 }

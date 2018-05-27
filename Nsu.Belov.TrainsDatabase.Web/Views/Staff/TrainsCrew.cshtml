@@ -1,0 +1,42 @@
+﻿@using Reinforced.Lattice.Configuration
+@using Reinforced.Lattice.Editing.Editors.PlainText
+@using Reinforced.Lattice.Editing.Editors.SelectList
+@using Reinforced.Lattice.Editing.Form
+@using Reinforced.Lattice.Mvc
+@using Reinforced.Lattice.Templates
+@model Nsu.Belov.TrainsDatabase.Web.Models.TrainsStaffViewModel
+
+@{
+    ViewBag.Title = "Профиль поезда";
+    var conf = Model.Configurator;
+    conf.EditingForm(f =>
+    {
+        f.EditSelectList(x => x.TrainId).Items(Model.TrainsIds);
+        f.RenderTo("#ltcModal");
+    }, c => c.Event("click").Selector("._beginEdit"));
+    conf.AddUiColumn<string>("Actions")
+        .Razor(@<div>
+                   <button class="btn btn-xs btn-warning _beginEdit">
+                       <span class="glyphicon glyphicon-pencil"></span>
+                   </button>
+
+               </div>);
+}
+
+<h2>Профиль поезда номер @Model.TrainId</h2>
+
+<h3>Команда:</h3>
+
+<div class="btn btn-default">@Html.ActionLink("Перейти к расписанию поезда","Index","Trips",new {trainId = Model.TrainId},new {})</div>
+<div id="table"></div>
+
+@section scripts {
+
+    @{ Html.RenderPartial("DeleteTemplate"); }
+
+    @* Render our templates *@
+    @{ Html.RenderTemplates("lt", "Lattice_Templates_Bootstrap"); }
+
+    @* Instantiate our table and put it to JS window.$$table variable *@
+    @Model.Configurator.InitializationScript("table", "window.$$table")
+}
