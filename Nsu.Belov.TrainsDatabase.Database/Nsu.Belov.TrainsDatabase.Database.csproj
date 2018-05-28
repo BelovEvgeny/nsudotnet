@@ -92,21 +92,9 @@
     <Compile Include="DatabaseEntities\RoutePoint.cs" />
     <Compile Include="DatabaseEntities\Station.cs" />
     <Compile Include="DatabaseEntities\Route.cs" />
-    <Compile Include="Migrations\201805251939407_all other v2.cs" />
-    <Compile Include="Migrations\201805251939407_all other v2.Designer.cs">
-      <DependentUpon>201805251939407_all other v2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805260821575_managersand admin.cs" />
-    <Compile Include="Migrations\201805260821575_managersand admin.Designer.cs">
-      <DependentUpon>201805260821575_managersand admin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805260832149_managersand admin v2.cs" />
-    <Compile Include="Migrations\201805260832149_managersand admin v2.Designer.cs">
-      <DependentUpon>201805260832149_managersand admin v2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805261520331_fixes.cs" />
-    <Compile Include="Migrations\201805261520331_fixes.Designer.cs">
-      <DependentUpon>201805261520331_fixes.cs</DependentUpon>
+    <Compile Include="Migrations\201805280810128_all v3.cs" />
+    <Compile Include="Migrations\201805280810128_all v3.Designer.cs">
+      <DependentUpon>201805280810128_all v3.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -118,17 +106,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201805251939407_all other v2.resx">
-      <DependentUpon>201805251939407_all other v2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805260821575_managersand admin.resx">
-      <DependentUpon>201805260821575_managersand admin.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805260832149_managersand admin v2.resx">
-      <DependentUpon>201805260832149_managersand admin v2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805261520331_fixes.resx">
-      <DependentUpon>201805261520331_fixes.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201805280810128_all v3.resx">
+      <DependentUpon>201805280810128_all v3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
