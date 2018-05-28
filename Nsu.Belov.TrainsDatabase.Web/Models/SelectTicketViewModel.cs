@@ -29,7 +29,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
     {
         public int TripId { get; set; }
         public int? TrainId { get; set; }
-        public int RouteId { get; set; }
+        public string RouteName { get; set; }
         public int NumberOfStations { get; set; }
         public int DepartureStationOrder { get; set; }
         public int ArrivalStationOrder { get; set; }

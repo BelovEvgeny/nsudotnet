@@ -155,7 +155,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 select new
                 {
                     TripId = trip.TripId,
-                    RouteId = trip.RouteId,
+                    RouteName = trip.Route.RouteName,
                     TrainId = trip.TrainId,
                     DepartureStationOrder = fitRoute.depStationOrder,
                     ArrivalStationOrder = fitRoute.arrStationOrder,
@@ -181,7 +181,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 select new SelectTripRow()
                 {
                     TripId = z.TripId,
-                    RouteId = z.RouteId,
+                    RouteName = z.RouteName,
                     TrainId = z.TrainId,
                     DepartureStationOrder = z.DepartureStationOrder,
                     ArrivalStationOrder = z.ArrivalStationOrder,

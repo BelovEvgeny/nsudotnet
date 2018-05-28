@@ -21,7 +21,11 @@
             f.EditSelectList(x => x.StationName).Items(Model.SationsNames);
             f.RenderTo("#ltcModal");
         }, c => c.Event("click").Selector("._beginEdit"));
-        conf.AddUiColumn<string>("Actions")
+
+        conf.Column(x => x.RouteId).DataOnly();
+        conf.Column(x => x.StationOrder).Title("Порядковый номер станции в маршруте");
+        conf.Column(x => x.StationName).Title("Название станции");
+        conf.AddUiColumn<string>("Действия")
     .Razor(@<div>
                        <button class="btn btn-xs btn-warning _beginEdit">
                            <span class="glyphicon glyphicon-pencil"></span>

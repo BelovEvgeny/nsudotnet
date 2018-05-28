@@ -31,14 +31,21 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
 
         public ActionResult Index(int? trainId = null)
         {
+            var routes = _context.Routes
+                .OrderBy(r => r.RouteId).ToArray();
             var vm = new TripEditViewModel()
             {
                 TrainId = trainId,
-                RouteIds = (from route in _context.Routes
-                    orderby route.RouteId
+                RouteNames = routes.Select(r => new SelectListItem()
+                {
+                    Text = r.RouteName,
+                    Value = r.RouteName
+                }).ToArray(),
+                StationNames = GetStationNames(),
+                RouteIds = (from route in routes
                     select new SelectListItem()
                     {
-                        Text = route.RouteId.ToString(),
+                        Text = route.RouteName,
                         Value = route.RouteId.ToString()
                     }).ToArray(),
                 TrainIds = (from train in _context.Trains
@@ -52,8 +59,18 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                     .Configure()
                     .Url(Url.Action(nameof(HandleTrips), new {trainid = trainId}))
             };
-            return View("Index",vm);
+            return View("Index", vm);
         }
+
+        private SelectListItem[] GetStationNames()
+        {
+            return _context.Stations.Select(x => new SelectListItem()
+            {
+                Value = x.StationName,
+                Text = x.StationName
+            }).ToArray();
+        }
+
 
         public ActionResult HandleTrips(int? trainId)
         {
@@ -84,7 +101,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                     .FirstOrDefault(x => x.TripId == tripRow.TripId);
             }
 
-            //на всякий случай(по идее, если сделано через форму то никогда не сработает)
+//на всякий случай(по идее, если сделано через форму то никогда не сработает)
             if (!_context.Routes.Any(x => x.RouteId == tripRow.RouteId))
             {
                 return latticeData.Adjust(x => x
@@ -104,8 +121,9 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             trip.RouteId = tripRow.RouteId;
             trip.TrainId = tripRow.TrainId;
             _context.SaveChanges();
+            var mpd = latticeData.Configuration.MapRange(latticeData.Source.Where(t => t.TripId == trip.TripId));
             return latticeData.Adjust(x => x
-                .Update(trip)
+                .Update(mpd)
                 .Message(LatticeMessage.User("success", "Editing", "Trip saved"))
             );
         }
@@ -126,6 +144,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
         {
             var vm = new TripPointForViewModel()
             {
+                StationNames = GetStationNames(),
                 Configurator = new Configurator<TripPoint, TripPointForRow>()
                     .Configure()
                     .Url(Url.Action(nameof(HandleTripPoints), new {tripId = tripId}))
@@ -151,7 +170,8 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 tripPoint = new TripPoint()
                 {
                     TripId = tripId,
-                    StationOrder = _context.TripPoints.Where(x => x.TripId == tripId).Max(x => x.StationOrder) + 1
+                    StationOrder = _context.TripPoints.Where(x => x.TripId == tripId).Select(x => x.StationOrder)
+                                       .DefaultIfEmpty(0).Max() + 1
                 };
                 int routeId = _context.Trips.FirstOrDefault(t => t.TripId == tripId).RouteId;
                 if (_context.RoutePoints.Where(rp => rp.RouteId == routeId)
@@ -211,7 +231,7 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                 && tripPointRow.ArrivalTime.HasValue)
             {
                 TripPoint previousPoint = _context.TripPoints
-                    .FirstOrDefault(x => x.TripId == tripId && x.StationOrder == tripPointRow.StationOrder - 1);
+                    .FirstOrDefault(x => x.TripId == tripId && x.StationOrder == tripPoint.StationOrder - 1);
                 if (previousPoint != null && tripPointRow.ArrivalTime < previousPoint.DepartureTime)
                 {
                     return latticeData.Adjust(x => x
@@ -235,10 +255,8 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
             }
 
             tripPointRow.TripId = tripPoint.TripId;
-
             var mpd = latticeData.Configuration.MapRange(latticeData.Source.Where(tp =>
                 tp.TripId == tripPoint.TripId && tp.StationOrder == tripPoint.StationOrder));
-
             return latticeData.Adjust(x => x.Update(mpd)
                 .Message(LatticeMessage.User("success", "Editing", "TripPoint saved"))
             );
@@ -256,7 +274,6 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
 
             var tripPoint = _context.TripPoints
                 .FirstOrDefault(x => x.TripId == subj.TripId && x.StationOrder == subj.StationOrder);
-
             _context.TripPoints.Remove(tripPoint);
             _context.SaveChanges();
             return latticeData.Adjust(x => x
@@ -299,8 +316,6 @@ namespace Nsu.Belov.TrainsDatabase.Web.Controllers
                                            .Where(point => point.ArrivalTime.HasValue)
                                            .OrderByDescending(point => point.StationOrder)
                                            .FirstOrDefault().ArrivalTime.Value.Date + TimeSpan.FromDays(1);
-
-
                 newTrip.TripPoints = new List<TripPoint>();
                 foreach (var tripPoint in lastTrainTrip.TripPoints)
                 {

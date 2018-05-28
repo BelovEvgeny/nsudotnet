@@ -12,7 +12,8 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
     {
         public int? TrainId { get; set; }
         public SelectListItem[] RouteIds { get; set; }
-
+        public SelectListItem[] RouteNames { get; set; }
+        public SelectListItem[] StationNames { get; set; }
         public SelectListItem[] TrainIds { get; set; }
         public Configurator<Trip, TripRow> Configurator { get; set; }
     }
@@ -33,6 +34,12 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
         public string ArrivalStationName { get; set; }
         public DateTime? ArrivalDate { get; set; }
         public int LateToNearestStation { get; set; }
+    }
+
+    public class TripPointForViewModel
+    {
+        public SelectListItem[] StationNames { get; set; }
+        public Configurator<TripPoint, TripPointForRow> Configurator { get; set; }
     }
 
     public static class TripEditTable
@@ -100,15 +107,11 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
         }
     }
 
-    public class TripPointForViewModel
-    {
-        public Configurator<TripPoint, TripPointForRow> Configurator { get; set; }
-    }
-
     public class TripPointForRow
     {
         public int TripId { get; set; }
         public int StationOrder { get; set; }
+        public string StationName { get; set; }
         public DateTime? ArrivalTime { get; set; }
         public DateTime? DepartureTime { get; set; }
         public int FirstClassSeatsLeft { get; set; }
@@ -144,6 +147,9 @@ namespace Nsu.Belov.TrainsDatabase.Web.Models
                                           z.touchingTickets.Count(x => x.SeatsType == SeatsType.FirstClass),
                     SecondClassSeatsLeft = z.tripPoint.Trip.Train.SecondClassCapacity -
                                            z.touchingTickets.Count(x => x.SeatsType == SeatsType.SecondClass),
+                    StationName = z.tripPoint.Trip.Route.RoutePoints
+                        .FirstOrDefault(rp => rp.StationOrder == z.tripPoint.StationOrder)
+                        .Station.StationName
                 }
             );
             return conf;

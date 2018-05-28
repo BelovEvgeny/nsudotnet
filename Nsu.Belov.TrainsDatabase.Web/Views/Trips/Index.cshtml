@@ -8,6 +8,7 @@
 @using Reinforced.Lattice.Editing.Form
 @using Reinforced.Lattice.Filters
 @using Reinforced.Lattice.Filters.Range
+@using Reinforced.Lattice.Filters.Select
 @using Reinforced.Lattice.Filters.Value
 @using Reinforced.Lattice.Mvc
 @using Reinforced.Lattice.Plugins.Toolbar
@@ -17,23 +18,49 @@
 @{
     ViewBag.Title = "Расписание поездок";
     var conf = Model.Configurator;
+
     conf.Column(x => x.TripId)
-        .Razor(@<div>
-                   {TripId} <br>
-                   <a href="@Url.Action("TripPointsForTrip", "Trips", new {tripId = "{TripId}"})"> открыть</a>
-               </div>);
-    conf.Column(x => x.RouteId)
-        .Razor(@<div>
-                   {RouteId} <br>
-                   <a href="@Url.Action("RoutePointsForRoute", "Routes", new {routeId = "{RouteId}"})">открыть</a>
-               </div>);
+        .DisplayOrder(50)
+        .Title("Станции")
+        .Razor(@<a class="btn btn-info" href="@Url.Action("TripPointsForTrip", "Trips", new {tripId = "{#}"})">
+                   Открыть
+               </a>);
 
+    conf.Column(x => x.TrainId).Title("Номер поезда");
+    conf.Column(x => x.DepatrureDate).Format("`parseDateTime({#})`").Title("Время отправления");
+    conf.Column(x => x.ArrivalDate).Format("`parseDateTime({#})`").Title("Время прибытия");
 
-    conf.Column(x => x.DepatrureDate).Format("`parseDateTime({#})`");
-    conf.Column(x => x.ArrivalDate).Format("`parseDateTime({#})`");
+    conf.Column(x => x.DepatrureStationName).Title("Станция отправления")
+        .FilterSelectUi(x => x.SelectAny(anyText: "Все")
+        .SelectItems(Model.StationNames).ClientFiltering());
+
+    conf.Column(x => x.ArrivalStationName).Title("Станция прибытия")
+        .FilterSelectUi(x => x.SelectAny(anyText: "Все")
+            .SelectItems(Model.StationNames).ClientFiltering());
+
+    conf.Column(x => x.RouteId).Title("Маршрут").DataOnly();
+    conf.Column(x => x.LateToNearestStation).Title("Задержка поезда до ближайшей станции");
+
+    conf.Column(x => x.RouteName)
+        .Title("Маршрут").
+        Razor(@<a href="@Url.Action("RoutePointsForRoute", "Routes", new {routeId = "{RouteId}"})">
+                  {RouteName}
+              </a>)
+        .FilterSelectUi(x => x.SelectAny(anyText: "Все").SelectItems(Model.RouteNames).ClientFiltering());
+
 
     if (User.IsInRole("operator"))
     {
+        conf.Column(x => x.TrainId).FilterSelectUi(x => x.SelectAny(anyText: "Все").SelectItems(Model.TrainIds));
+
+      @*  conf.Column(x => x.RouteId)
+            .Razor(@<div>
+                       {RouteId} <br>
+                       <a href="@Url.Action("RoutePointsForRoute", "Routes", new {routeId = "{RouteId}"})">открыть</a>
+                   </div>)
+            .FilterSelectUi(x => x.SelectAny(anyText: "Все").SelectItems(Model.RouteIds).ClientFiltering());
+        ;*@
+
         conf.Column(x => x.TrainId)
             .Razor(@<div>
                        {TrainId} <br>
@@ -55,7 +82,7 @@
                 x.AddSimpleButton($"<a href=/Trips/GenerateNew?trainId={Model.TrainId}>Сгенерировать новую</a>");
             }
         });
-        conf.AddUiColumn<string>("Actions")
+        conf.AddUiColumn<string>("Редактирование").DisplayOrder(51)
             .Razor(@<div>
                        <button class="btn btn-xs btn-warning _beginEdit">
                            <span class="glyphicon glyphicon-pencil"></span>
@@ -67,20 +94,17 @@
             .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
         conf.Command("Remove", x => x.ConfigureRemoval());
     }
-    conf.Column(x => x.TripId).FilterValueUi(ui => ui.ClientFiltering());
-    conf.Column(x => x.TrainId).FilterValueUi(ui => ui.ClientFiltering());
-    conf.Column(x => x.RouteId).FilterValueUi(ui => ui.ClientFiltering());
-    conf.Column(x => x.RouteName).FilterValueUi(ui => ui.ClientFiltering());
-    conf.Column(x => x.DepatrureStationName).FilterValueUi(ui => ui.ClientFiltering());
+
+   
     conf.Column(x => x.DepatrureDate).FilterValueUi(ui => ui.CompareOnlyDates().ClientFiltering());
-    conf.Column(x => x.ArrivalStationName).FilterValueUi(ui => ui.ClientFiltering());
     conf.Column(x => x.ArrivalDate).FilterValueUi(ui => ui.CompareOnlyDates().ClientFiltering());
     conf.Column(x => x.LateToNearestStation).FilterValueUi(ui => ui.ClientFiltering());
 }
 
 <h2>Маршруты</h2>
 @Html.ValidationSummary()
-<div id="table"></div>
+<div id="table">
+</ div >
 
 @section scripts {
     @{ Html.RenderPartial("DeleteTemplate"); }

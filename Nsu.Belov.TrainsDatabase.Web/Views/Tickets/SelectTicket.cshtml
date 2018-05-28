@@ -12,19 +12,29 @@
     var conf = Model.Configurator;
     conf.Column(x => x.DepartureStationOrder).DataOnly();
     conf.Column(x => x.ArrivalStationOrder).DataOnly();
+    conf.Column(x => x.TripId).DataOnly();
+    conf.Column(x => x.TrainId).Title("Номер поезда");
+    // conf.Column(x => x.TrainId).Title("Номер поезда");
+    conf.Column(x => x.FirstClassTickets).Title("Осталось билетов первого класса")
+        .OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.SecondClassTickets).Title("Осталось билетов второго класса")
+        .OrderableUi(ui => ui.UseClientOrdering());
+
     conf.AddUiColumn<string>("Время в пути").ClientExpression("getDurationinMinutes({DepartureTime},{ArrivalTime})")
         .Format("`humanizeTimeSpan({#})`")
         .OrderableUi(ui => ui.UseClientOrdering());
-    conf.Column(x => x.DepartureTime).Format("`parseDateTime({#});`").OrderableUi(ui => ui.UseClientOrdering());
-    conf.Column(x => x.ArrivalTime).Format("`parseDateTime({#});`").OrderableUi(ui => ui.UseClientOrdering());
-    conf.AddUiColumn<string>("Buy")
+    conf.Column(x => x.DepartureTime).Title("Время отправления")
+        .Format("`parseDateTime({#});`").OrderableUi(ui => ui.UseClientOrdering());
+    conf.Column(x => x.ArrivalTime).Title("Время прибытия")
+        .Format("`parseDateTime({#});`").OrderableUi(ui => ui.UseClientOrdering());
+    conf.AddUiColumn<string>("Купить")
         .TemplateFunction("formatBuyColumn");
     // .SubscribeCellEvent(x => x.Command("click", "Remove").Selector("._remove"));
 
-    conf.Column(x => x.TripId).OrderableUi(ui => ui.UseClientOrdering());
+    //conf.Column(x => x.TripId).OrderableUi(ui => ui.UseClientOrdering());
     conf.Column(x => x.TrainId).OrderableUi(ui => ui.UseClientOrdering());
-    conf.Column(x => x.RouteId).OrderableUi(ui => ui.UseClientOrdering());
-    conf.Column(x => x.NumberOfStations).OrderableUi(ui => ui.UseClientOrdering()).Title("Stations");
+    conf.Column(x => x.RouteName).OrderableUi(ui => ui.UseClientOrdering()).Title("Маршрут");
+    conf.Column(x => x.NumberOfStations).OrderableUi(ui => ui.UseClientOrdering()).Title("Станций в пути");
 }
 
 <style type="text/css">
