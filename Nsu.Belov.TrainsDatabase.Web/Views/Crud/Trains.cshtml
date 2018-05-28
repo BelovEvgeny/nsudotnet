@@ -14,6 +14,8 @@
     conf.EditingForm(f =>
     {
         f.EditPlainText(x => x.TrainId);
+        f.EditPlainText(x => x.FirstClassCapacity);
+        f.EditPlainText(x => x.SecondClassCapacity);
         f.RenderTo("#ltcModal");
     }, c => c.Event("click").Selector("._beginEdit"));
     conf.Toolbar("toolbar-rt", x => { x.AddSimpleButton("Add new").AddNewByForm(); });
